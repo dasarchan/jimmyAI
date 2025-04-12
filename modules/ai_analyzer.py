@@ -232,7 +232,7 @@ The paper ID is: {paper.id}
         )
         
         content = response.text 
-        return content
+        paper.relevant_content = content
 
     except Exception as e:
         print(f"Error extracting content from paper {paper.id}: {e}")
@@ -266,6 +266,9 @@ def analyze_papers(papers: List[Paper], topic: str, include_terms: List[str], ex
         
         # Use the paper title as the key for better user readability
         results[paper.title] = result 
+
+        if paper.is_relevant:
+            extract_paper_content(paper, topic)
         
         print(f"  Relevant: {result.get('is_relevant', 'unknown')}")
         
