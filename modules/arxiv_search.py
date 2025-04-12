@@ -2,6 +2,7 @@
 Module for generating optimized arXiv search queries and fetching paper metadata.
 """
 import arxiv
+from paper import Paper
 
 def generate_search_query(topic, include_terms=None, exclude_terms=None):
     """
@@ -53,4 +54,8 @@ def fetch_papers(query, max_results=50, sort_by=arxiv.SortCriterion.SubmittedDat
     )
     
     results = list(client.results(search))
+    # Convert arxiv.Result objects to Paper objects
+
+    results = [Paper.from_arxiv_result(paper) for paper in results]
+    
     return results 

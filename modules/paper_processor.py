@@ -6,13 +6,16 @@ import requests
 import tempfile
 from google import genai
 import time
+from typing import List, Dict, Any
 
-def upload_papers(papers, client):
+from modules.paper import Paper
+
+def upload_papers(papers: List[Paper], client) -> Dict[str, Dict[str, Any]]:
     """
     Download PDFs temporarily and upload them to Google AI Platform.
     
     Args:
-        papers (list): List of arxiv.Result objects
+        papers (List[Paper]): List of Paper objects
         client: The Google Generative AI client
         
     Returns:
@@ -23,7 +26,7 @@ def upload_papers(papers, client):
     # Create a temporary directory to store downloads
     with tempfile.TemporaryDirectory() as temp_dir:
         for i, paper in enumerate(papers):
-            paper_id = paper.get_short_id()
+            paper_id = paper.id
             pdf_url = paper.pdf_url
             
             print(f"Processing {i+1}/{len(papers)}: {paper_id} - {paper.title}")
@@ -45,10 +48,14 @@ def upload_papers(papers, client):
                 print(f"  Uploading to Google AI")
                 uploaded_file = client.files.upload(file=temp_file_path)
                 
+                # Update the paper object with upload info
+                paper.uploaded = True
+                paper.file_uri = uploaded_file.uri
+                
                 # Store the file URI for later use with Gemini
                 paper_uris[paper_id] = {
                     "uri": uploaded_file.uri,
-                    "mime_type": "application/pdf",
+                    "mime_type": paper.mime_type,
                     "title": paper.title
                 }
                 
@@ -59,22 +66,5 @@ def upload_papers(papers, client):
     
     return paper_uris
 
-def extract_metadata(paper):
-    """
-    Extract relevant metadata from an arxiv.Result object.
-    
-    Args:
-        paper: An arxiv.Result object
-        
-    Returns:
-        dict: Metadata extracted from the paper
-    """
-    return {
-        "id": paper.get_short_id(),
-        "title": paper.title,
-        "authors": [author.name for author in paper.authors],
-        "abstract": paper.summary,
-        "categories": paper.categories,
-        "published": paper.published.strftime("%Y-%m-%d"),
-        "url": paper.entry_id
-    } 
+# The extract_metadata function is no longer needed since we have the Paper class
+# with proper conversion methods like from_arxiv_result and to_dict
