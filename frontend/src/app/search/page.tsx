@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import Link from "next/link"
 import {
   Search,
   Filter,
@@ -101,7 +102,9 @@ export default function SearchPage() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <BookOpen className="h-6 w-6 text-emerald-600" />
-            <span className="font-serif text-xl font-semibold">LitReviewAI</span>
+            <Link href="/">
+              <span className="font-serif text-xl font-semibold">LitReviewAI</span>
+            </Link>
           </div>
           <div className="flex items-center space-x-4">
             <Button variant="ghost" className="text-gray-600">
