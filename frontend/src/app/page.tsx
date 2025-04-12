@@ -10,7 +10,10 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <BookOpen className="h-6 w-6 text-emerald-600" />
-            <span className="font-serif text-xl font-semibold">LitReviewAI</span>
+            
+            <Link href="/">
+              <span className="font-serif text-xl font-semibold">LitReviewAI</span>
+            </Link>
           </div>
           <nav className="hidden md:flex space-x-8">
             <Link href="#features" className="text-gray-700 hover:text-emerald-600 transition-colors">
@@ -23,7 +26,9 @@ export default function Home() {
               Benefits
             </Link>
           </nav>
-          <Button className="bg-emerald-600 hover:bg-emerald-700">Get Started</Button>
+          <Link href="/search">
+            <Button className="bg-emerald-600 hover:bg-emerald-700">Get Started</Button>
+          </Link>
         </div>
       </header>
 
@@ -39,10 +44,12 @@ export default function Home() {
               sources, and documenting findings according to PRISMA guidelines.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-lg px-6 py-6">
-                Start Your Review
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <Link href="/search">
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-lg px-6 py-6">
+                  Start Your Review
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 text-lg px-6 py-6"
@@ -248,10 +255,12 @@ export default function Home() {
           <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-8">
             Join researchers worldwide who are saving time and improving the quality of their literature reviews.
           </p>
-          <Button className="bg-emerald-600 hover:bg-emerald-700 text-lg px-8 py-6">
-            Get Started Today
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <Link href="/search">
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-lg px-8 py-6">
+              Get Started Today
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
         </div>
       </section>
 
