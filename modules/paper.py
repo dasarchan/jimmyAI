@@ -33,6 +33,7 @@ class Paper:
     is_relevant: Optional[bool] = None
     relevance_reasoning: Optional[str] = None
     summary: Optional[str] = None
+    relevant_content: Optional[str] = None
     
     # Additional metadata that might be useful
     citation_count: Optional[int] = None
