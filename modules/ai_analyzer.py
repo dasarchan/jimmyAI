@@ -2,12 +2,13 @@
 Module for analyzing paper relevance using Google's Gemini AI.
 """
 import os
-import google.generativeai as genai
+from google import genai
 from pypdf import PdfReader
 import json
 
 # Configure the Gemini API
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def extract_text_from_pdf(pdf_path, max_pages=None):
     """
@@ -82,11 +83,13 @@ def analyze_relevance(paper_text, paper_id, topic, include_terms, exclude_terms)
     """
     
     try:
-        model = genai.GenerativeModel('gemini-1.5-pro')
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-2.0-flash", contents=prompt
+        )
         
         # Extract the JSON response
         content = response.text
+        print(content)
         
         # Find JSON block if it's embedded in markdown
         if "```json" in content:

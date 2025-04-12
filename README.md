@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# jimmyAI
-=======
 # LitReviewAI
 
 An AI-powered CLI tool for conducting thorough literature reviews.
@@ -41,4 +38,3 @@ python litreview.py --help
 
 - Python 3.8+
 - Google AI API key for Gemini 2.5 Pro 
->>>>>>> 43ba7d0 (initial scaffolding)

@@ -22,7 +22,7 @@ def cli():
 @click.option('--topic', required=True, help='Main research topic')
 @click.option('--include', multiple=True, help='Terms that should be included (can be used multiple times)')
 @click.option('--exclude', multiple=True, help='Terms that should be excluded (can be used multiple times)')
-@click.option('--max-papers', default=int(os.getenv('MAX_PAPERS', 50)), 
+@click.option('--max-papers', default=int(os.getenv('MAX_PAPERS', 5)), 
               help='Maximum number of papers to retrieve')
 @click.option('--output-dir', default=os.getenv('OUTPUT_DIR', './papers'),
               help='Directory to save downloaded papers')
