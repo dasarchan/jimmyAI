@@ -239,7 +239,7 @@ The paper ID is: {paper.id}
         return None
 
 
-def analyze_papers(papers: List[Paper], topic: str, include_terms: List[str], exclude_terms: List[str]) -> Dict[str, Dict]:
+def filter_papers(papers: List[Paper], topic: str, include_terms: List[str], exclude_terms: List[str]) -> Dict[str, Dict]:
     """
     Analyze multiple papers for relevance.
     
