@@ -57,5 +57,5 @@ def fetch_papers(query, max_results=50, sort_by=arxiv.SortCriterion.SubmittedDat
     # Convert arxiv.Result objects to Paper objects
 
     results = [Paper.from_arxiv_result(paper) for paper in results]
-    
+
     return results 
