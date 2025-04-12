@@ -2,7 +2,7 @@
 Module for generating optimized arXiv search queries and fetching paper metadata.
 """
 import arxiv
-from paper import Paper
+from modules.paper import Paper
 
 def generate_search_query(topic, include_terms=None, exclude_terms=None):
     """

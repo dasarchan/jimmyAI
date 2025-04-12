@@ -11,7 +11,7 @@ dotenv.load_dotenv()
 
 from modules.arxiv_search import fetch_papers
 from modules.paper_processor import upload_papers
-from modules.ai_analyzer import analyze_papers, client, generate_queries_gemini, get_inclusion_exclusion_criteria
+from modules.ai_analyzer import filter_papers, client, generate_queries_gemini, get_inclusion_exclusion_criteria
 from modules.outline_generator import generate_literature_review_outline
 from modules.paper import Paper
 
@@ -47,9 +47,13 @@ def search(topic, max_papers):
     papers = upload_papers(papers, client)
     click.echo(f"Uploaded {len(papers)} papers")
     
-    # Step 4: Analyze relevance with AI
-    click.echo("Analyzing papers with Gemini...")
-    results = analyze_papers(papers, topic, include, exclude)
+    # Step 4: Analyze relevance with AI and extract relevant content
+    click.echo("Analyzing and filtering papers with Gemini...")
+    results = filter_papers(papers, topic, include, exclude)
+    click.echo("\nFiltered papers")
+    for paper in papers:
+        if paper.is_relevant:
+            print(paper.relevant_content)
 
     # Step 5: Generate outline
     click.echo("Generating outline...")
