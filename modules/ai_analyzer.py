@@ -81,11 +81,44 @@ def analyze_relevance_with_pdf(file_data, paper_id, topic, include_terms, exclud
             
         # Parse the JSON
         result = json.loads(json_content)
-        return result["is_relevant"]
+        return result
     
     except Exception as e:
         print(f"Error analyzing paper {paper_id}: {e}")
         return "no"  # Return "no" on error
+
+
+def extract_relevance(file_data, paper_id, topic, model="gemini-2.0-flash"):
+    prompt = f"""
+You are a research assistant conducting a literature review on the topic: "{topic}".
+
+Extract relevant parts from the attached research paper. Only include key findings and contributions that are relevant to the overall literature review.
+
+The paper ID is: {paper_id}
+    """
+    try:
+        # Create content parts with both the text prompt and the PDF file
+        contents = [
+            {"file_data": {
+                "mime_type": file_data["mime_type"],
+                "file_uri": file_data["uri"]
+            }},
+            {"text": prompt}
+        ]
+        
+        # Generate content with the prompt and PDF
+        response = client.models.generate_content(
+            model=model, 
+            contents=contents
+        )
+        
+        content = response.text 
+        return content
+
+    except Exception as e:
+        print(f"Error extracting content from paper {paper_id}: {e}")
+        return None
+
 
 def analyze_papers(paper_uris, topic, include_terms, exclude_terms):
     """
@@ -106,11 +139,11 @@ def analyze_papers(paper_uris, topic, include_terms, exclude_terms):
         print(f"Analyzing {paper_id}...")
         
         # Analyze with Gemini using the file URI
-        relevance = analyze_relevance_with_pdf(file_data, paper_id, topic, include_terms, exclude_terms)
+        result = analyze_relevance_with_pdf(file_data, paper_id, topic, include_terms, exclude_terms)
         
         # Use the paper title as the key for better user readability
-        results[file_data["title"]] = relevance
+        results[file_data["title"]] = result 
         
-        print(f"  Relevant: {relevance}")
+        print(f"  Relevant: {result['relevance']}")
         
     return results
