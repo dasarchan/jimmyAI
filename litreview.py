@@ -53,9 +53,23 @@ def search(topic, include, exclude, max_papers, output_dir):
     
     # Step 5: Report results
     click.echo("\nResults:")
-    for paper, score in sorted(results.items(), key=lambda x: x[1], reverse=True):
-        relevance = "High" if score > 0.7 else "Medium" if score > 0.4 else "Low"
-        click.echo(f"- {os.path.basename(paper)}: {relevance} relevance ({score:.2f})")
+    relevant_papers = []
+    irrelevant_papers = []
+    
+    for paper_path, relevance in results.items():
+        paper_name = os.path.basename(paper_path)
+        if relevance.lower() == "yes":
+            relevant_papers.append(paper_name)
+        else:
+            irrelevant_papers.append(paper_name)
+    
+    click.echo(f"\nRelevant papers ({len(relevant_papers)}):")
+    for paper in relevant_papers:
+        click.echo(f"- {paper}")
+    
+    click.echo(f"\nNon-relevant papers ({len(irrelevant_papers)}):")
+    for paper in irrelevant_papers:
+        click.echo(f"- {paper}")
     
     click.echo("\nLiterature review complete!")
 
