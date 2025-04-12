@@ -7,7 +7,6 @@ from pypdf import PdfReader
 import json
 
 # Configure the Gemini API
-
 client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def extract_text_from_pdf(pdf_path, max_pages=None):
@@ -46,10 +45,10 @@ def analyze_relevance(paper_text, paper_id, topic, include_terms, exclude_terms)
         exclude_terms (list): Terms that should be excluded
         
     Returns:
-        float: Relevance score between 0 and 1
+        str: "yes" if relevant, "no" if not
     """
     # Truncate paper text if too long (to fit within context window)
-    max_chars = 30000  # Approximate limit for Gemini
+    max_chars = 100000  # Approximate limit for Gemini
     if len(paper_text) > max_chars:
         paper_text = paper_text[:max_chars] + "... [truncated]"
     
@@ -61,10 +60,12 @@ def analyze_relevance(paper_text, paper_id, topic, include_terms, exclude_terms)
     prompt = f"""
     You are a research assistant conducting a literature review on the topic: "{topic}".
     
-    You need to evaluate the following research paper for its relevance to this topic.
+    You need to evaluate the following research paper for its relevance to a literature review on this topic.
     
     Inclusion criteria: {include_str}
     Exclusion criteria: {exclude_str}
+
+    Indicate if this paper should be cited as part of a literature review on the topic.
     
     Please analyze the following paper:
     
@@ -74,12 +75,12 @@ def analyze_relevance(paper_text, paper_id, topic, include_terms, exclude_terms)
     ======= END PAPER =======
     
     First, provide a very brief summary of the paper.
-    Then, carefully assess the paper's relevance to the topic, considering the inclusion and exclusion criteria.
+    Then, carefully assess if the paper is relevant to the topic, considering the inclusion and exclusion criteria.
     
     Respond with a JSON object having the following fields:
     - summary: A short summary of the paper (100 words max)
-    - relevance_score: A score from 0.0 to 1.0 indicating relevance (0 = not relevant, 1 = highly relevant)
-    - reasoning: Brief explanation for the score (50 words max)
+    - is_relevant: "yes" or "no" indicating whether the paper is relevant
+    - reasoning: Brief explanation for your decision (50 words max)
     """
     
     try:
@@ -101,11 +102,11 @@ def analyze_relevance(paper_text, paper_id, topic, include_terms, exclude_terms)
             
         # Parse the JSON
         result = json.loads(json_content)
-        return result["relevance_score"]
+        return result["is_relevant"]
     
     except Exception as e:
         print(f"Error analyzing paper {paper_id}: {e}")
-        return 0.0  # Return 0 score on error
+        return "no"  # Return "no" on error
 
 def analyze_papers(paper_paths, topic, include_terms, exclude_terms, max_pages=10):
     """
@@ -119,7 +120,7 @@ def analyze_papers(paper_paths, topic, include_terms, exclude_terms, max_pages=1
         max_pages (int): Maximum number of pages to analyze per paper
         
     Returns:
-        dict: Mapping of paper paths to relevance scores
+        dict: Mapping of paper paths to relevance results ("yes" or "no")
     """
     results = {}
     
@@ -131,13 +132,13 @@ def analyze_papers(paper_paths, topic, include_terms, exclude_terms, max_pages=1
         
         if not paper_text:
             print(f"  Warning: Couldn't extract text from {paper_id}")
-            results[pdf_path] = 0.0
+            results[pdf_path] = "no"
             continue
             
         # Analyze with Gemini
-        score = analyze_relevance(paper_text, paper_id, topic, include_terms, exclude_terms)
-        results[pdf_path] = score
+        relevance = analyze_relevance(paper_text, paper_id, topic, include_terms, exclude_terms)
+        results[pdf_path] = relevance
         
-        print(f"  Relevance score: {score:.2f}")
+        print(f"  Relevant: {relevance}")
         
-    return results 
+    return results
