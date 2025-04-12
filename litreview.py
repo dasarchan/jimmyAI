@@ -10,10 +10,14 @@ import dotenv
 # Load environment variables
 dotenv.load_dotenv()
 
+
+dotenv.load_dotenv()
+
 from modules.arxiv_search import generate_search_query, fetch_papers
 from modules.paper_processor import download_papers
 from modules.ai_analyzer import analyze_papers
 
+# Load environment variables
 @click.group()
 def cli():
     """LitReviewAI: AI-powered literature review tool."""
