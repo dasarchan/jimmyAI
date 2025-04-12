@@ -6,15 +6,13 @@ LitReviewAI: An AI-powered tool for conducting thorough literature reviews.
 import os
 import click
 import dotenv
-
 # Load environment variables
 dotenv.load_dotenv()
 
 from modules.arxiv_search import generate_search_query, fetch_papers
-from modules.paper_processor import download_papers
-from modules.ai_analyzer import analyze_papers
+from modules.paper_processor import upload_papers
+from modules.ai_analyzer import analyze_papers, client
 
-# Load environment variables
 @click.group()
 def cli():
     """LitReviewAI: AI-powered literature review tool."""
@@ -24,11 +22,9 @@ def cli():
 @click.option('--topic', required=True, help='Main research topic')
 @click.option('--include', multiple=True, help='Terms that should be included (can be used multiple times)')
 @click.option('--exclude', multiple=True, help='Terms that should be excluded (can be used multiple times)')
-@click.option('--max-papers', default=int(os.getenv('MAX_PAPERS', 5)), 
+@click.option('--max-papers', default=int(os.getenv('MAX_PAPERS', 10)), 
               help='Maximum number of papers to retrieve')
-@click.option('--output-dir', default=os.getenv('OUTPUT_DIR', './papers'),
-              help='Directory to save downloaded papers')
-def search(topic, include, exclude, max_papers, output_dir):
+def search(topic, include, exclude, max_papers):
     """Run a literature review with the given parameters."""
     click.echo(f"Starting literature review on: {topic}")
     
@@ -42,34 +38,20 @@ def search(topic, include, exclude, max_papers, output_dir):
     papers = fetch_papers(query, max_results=max_papers)
     click.echo(f"Found {len(papers)} papers matching criteria")
     
-    # Step 3: Download PDFs
-    click.echo("Downloading papers...")
-    os.makedirs(output_dir, exist_ok=True)
-    paper_paths = download_papers(papers, output_dir)
+    # Step 3: Upload papers to Google AI
+    click.echo("Uploading papers to Google AI...")
+    paper_uris = upload_papers(papers, client)
+    click.echo(f"Uploaded {len(paper_uris)} papers")
     
     # Step 4: Analyze relevance with AI
-    click.echo("Analyzing papers with Gemini 2.5 Pro...")
-    results = analyze_papers(paper_paths, topic, include, exclude)
+    click.echo("Analyzing papers with Gemini...")
+    results = analyze_papers(paper_uris, topic, include, exclude)
     
     # Step 5: Report results
     click.echo("\nResults:")
-    relevant_papers = []
-    irrelevant_papers = []
-    
-    for paper_path, relevance in results.items():
-        paper_name = os.path.basename(paper_path)
-        if relevance.lower() == "yes":
-            relevant_papers.append(paper_name)
-        else:
-            irrelevant_papers.append(paper_name)
-    
-    click.echo(f"\nRelevant papers ({len(relevant_papers)}):")
-    for paper in relevant_papers:
-        click.echo(f"- {paper}")
-    
-    click.echo(f"\nNon-relevant papers ({len(irrelevant_papers)}):")
-    for paper in irrelevant_papers:
-        click.echo(f"- {paper}")
+    for title, relevance in results.items():
+        relevance_text = "Relevant" if relevance == "yes" else "Not relevant"
+        click.echo(f"- {title}: {relevance_text}")
     
     click.echo("\nLiterature review complete!")
 

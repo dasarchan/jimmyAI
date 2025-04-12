@@ -1,57 +1,63 @@
 """
-Module for downloading and processing arXiv papers.
+Module for processing arXiv papers using Google's file API.
 """
 import os
 import requests
-from urllib.parse import urlparse
+import tempfile
+from google import genai
 import time
 
-def download_papers(papers, output_dir):
+def upload_papers(papers, client):
     """
-    Download PDF files for the given papers.
+    Download PDFs temporarily and upload them to Google AI Platform.
     
     Args:
         papers (list): List of arxiv.Result objects
-        output_dir (str): Directory to save downloaded PDFs
+        client: The Google Generative AI client
         
     Returns:
-        dict: Mapping of paper IDs to local file paths
+        dict: Mapping of paper IDs to file URIs
     """
-    paper_paths = {}
-    os.makedirs(output_dir, exist_ok=True)
+    paper_uris = {}
     
-    for i, paper in enumerate(papers):
-        paper_id = paper.get_short_id()
-        filename = f"{paper_id}.pdf"
-        filepath = os.path.join(output_dir, filename)
-        
-        # Check if file already exists
-        if os.path.exists(filepath):
-            print(f"Paper {paper_id} already downloaded, skipping")
-            paper_paths[paper_id] = filepath
-            continue
-        
-        # Download the PDF
-        try:
+    # Create a temporary directory to store downloads
+    with tempfile.TemporaryDirectory() as temp_dir:
+        for i, paper in enumerate(papers):
+            paper_id = paper.get_short_id()
             pdf_url = paper.pdf_url
-            print(f"Downloading {i+1}/{len(papers)}: {paper_id} - {paper.title}")
             
-            response = requests.get(pdf_url, stream=True)
-            response.raise_for_status()
+            print(f"Processing {i+1}/{len(papers)}: {paper_id} - {paper.title}")
             
-            with open(filepath, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
-                    
-            paper_paths[paper_id] = filepath
+            # Create a temporary file path
+            temp_file_path = os.path.join(temp_dir, f"{paper_id}.pdf")
             
-            # Be nice to the arXiv API - don't make too many requests too quickly
-            time.sleep(1)
-            
-        except Exception as e:
-            print(f"Error downloading {paper_id}: {e}")
+            try:
+                # First download the PDF
+                print(f"  Downloading from {pdf_url}")
+                response = requests.get(pdf_url, stream=True)
+                response.raise_for_status()
+                
+                with open(temp_file_path, 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                
+                # Then upload to Google AI
+                print(f"  Uploading to Google AI")
+                uploaded_file = client.files.upload(file=temp_file_path)
+                
+                # Store the file URI for later use with Gemini
+                paper_uris[paper_id] = {
+                    "uri": uploaded_file.uri,
+                    "mime_type": "application/pdf",
+                    "title": paper.title
+                }
+                
+                time.sleep(1)
+                
+            except Exception as e:
+                print(f"Error processing {paper_id}: {e}")
     
-    return paper_paths
+    return paper_uris
 
 def extract_metadata(paper):
     """
