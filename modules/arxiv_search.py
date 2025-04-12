@@ -25,12 +25,12 @@ def generate_search_query(topic, include_terms=None, exclude_terms=None):
             inclusion_parts.append(f'(ti:{term} OR abs:{term})')
         if inclusion_parts:
             query += ' AND (' + ' OR '.join(inclusion_parts) + ')'
-            
+    
     # Add exclusion terms
     if exclude_terms:
         for term in exclude_terms:
             query += f' ANDNOT (ti:{term} OR abs:{term})'
-    
+ 
     return query
 
 def fetch_papers(query, max_results=50, sort_by=arxiv.SortCriterion.SubmittedDate):

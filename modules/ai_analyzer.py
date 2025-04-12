@@ -12,6 +12,101 @@ if not api_key:
     
 client = genai.Client(api_key=api_key)
 
+def get_inclusion_exclusion_criteria(topic, num_criteria=5):
+    """
+    Ask Gemini to provide lists of inclusion and exclusion criteria for a given research topic.
+
+    Args:
+        topic (str): The main research topic
+
+    Returns:
+        tuple: (inclusion_terms, exclusion_terms), both as lists of strings
+    """
+
+    prompt = f"""
+    You are a research assistant preparing a literature review according to PRISMA guidelines.
+
+    For the topic "{topic}", generate two lists of length {num_criteria}:
+    1. Inclusion criteria, that qualifies a paper to be included in a literature review
+    2. Exclusion criteria, that disqualifies a paper to be included in a literature review
+
+    Come up with a reasonable set of inclusion/exclusion criteria similar to what would be seen in a professionally done literature review.
+
+    Respond as a JSON object with two fields:
+    - "include": a list of terms to include
+    - "exclude": a list of terms to exclude
+    """
+
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=[{"text": prompt}]
+        )
+        content = response.text.strip()
+
+        # Handle optional markdown formatting
+        if "```json" in content:
+            json_content = content.split("```json")[1].split("```")[0].strip()
+        elif "```" in content:
+            json_content = content.split("```")[1].strip()
+        else:
+            json_content = content
+
+        result = json.loads(json_content)
+        return result.get("include", []), result.get("exclude", [])
+
+    except Exception as e:
+        print(f"Error retrieving inclusion/exclusion terms: {e}")
+        return [], []
+
+
+def generate_queries_gemini(topic, num_queries=5):
+    """
+    Use Gemini 2.0 Flash to generate multiple arXiv-compatible search queries as a JSON list.
+
+    Args:
+        topic (str): The main topic of interest
+        num_queries (int): Number of query variations to generate
+
+    Returns:
+        list: A list of arXiv search query strings (parsed from JSON)
+    """
+    prompt = f"""
+    You are an expert at creating arXiv API-compatible search queries.
+
+    Generate {num_queries} different arXiv-compatible search query strings for the topic "{topic}".
+
+    Each query should:
+    - Use fields like ti: (title) and abs: (abstract)
+    - Use boolean logic (AND, OR, ANDNOT)
+    - Be formatted correctly for use with the arXiv API
+
+    Return your result as a JSON array of strings.
+    Do not include markdown formatting or extra commentary.
+    """
+
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=[{"text": prompt}]
+        )
+        content = response.text.strip()
+
+        # Clean up possible markdown formatting
+        if "```json" in content:
+            json_content = content.split("```json")[1].split("```")[0].strip()
+        elif "```" in content:
+            json_content = content.split("```")[1].strip()
+        else:
+            json_content = content
+
+        return json.loads(json_content)
+
+    except Exception as e:
+        print(f"Error generating JSON-formatted queries: {e}")
+        return []
+    
+
 def analyze_relevance_with_pdf(file_data, paper_id, topic, include_terms, exclude_terms):
     """
     Analyze the relevance of a paper using Gemini 2.5 Pro with direct PDF access.

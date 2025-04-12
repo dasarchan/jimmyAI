@@ -9,9 +9,9 @@ import dotenv
 # Load environment variables
 dotenv.load_dotenv()
 
-from modules.arxiv_search import generate_search_query, fetch_papers
+from modules.arxiv_search import fetch_papers
 from modules.paper_processor import upload_papers
-from modules.ai_analyzer import analyze_papers, client
+from modules.ai_analyzer import analyze_papers, client, generate_queries_gemini, get_inclusion_exclusion_criteria
 
 @click.group()
 def cli():
@@ -20,19 +20,21 @@ def cli():
 
 @cli.command()
 @click.option('--topic', required=True, help='Main research topic')
-@click.option('--include', multiple=True, help='Terms that should be included (can be used multiple times)')
-@click.option('--exclude', multiple=True, help='Terms that should be excluded (can be used multiple times)')
 @click.option('--max-papers', default=int(os.getenv('MAX_PAPERS', 10)), 
               help='Maximum number of papers to retrieve')
-def search(topic, include, exclude, max_papers):
+def search(topic, max_papers):
     """Run a literature review with the given parameters."""
     click.echo(f"Starting literature review on: {topic}")
     
     # Step 1: Generate search query
     click.echo("Generating optimized search query...")
-    query = generate_search_query(topic, include, exclude)
+    include, exclude = get_inclusion_exclusion_criteria(topic, num_criteria=5)
+    queries = generate_queries_gemini(topic, num_queries=5)
+
+    query = " OR ".join([f"({q})" for q in queries])
+
     click.echo(f"Search query: {query}")
-    
+
     # Step 2: Fetch paper metadata from arXiv
     click.echo(f"Fetching up to {max_papers} papers from arXiv...")
     papers = fetch_papers(query, max_results=max_papers)
