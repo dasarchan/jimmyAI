@@ -12,6 +12,8 @@ dotenv.load_dotenv()
 from modules.arxiv_search import fetch_papers
 from modules.paper_processor import upload_papers
 from modules.ai_analyzer import analyze_papers, client, generate_queries_gemini, get_inclusion_exclusion_criteria
+from modules.outline_generator import generate_literature_review_outline
+from modules.paper import Paper
 
 @click.group()
 def cli():
@@ -42,12 +44,18 @@ def search(topic, max_papers):
     
     # Step 3: Upload papers to Google AI
     click.echo("Uploading papers to Google AI...")
-    paper_uris = upload_papers(papers, client)
-    click.echo(f"Uploaded {len(paper_uris)} papers")
+    papers = upload_papers(papers, client)
+    click.echo(f"Uploaded {len(papers)} papers")
     
     # Step 4: Analyze relevance with AI
     click.echo("Analyzing papers with Gemini...")
-    results = analyze_papers(paper_uris, topic, include, exclude)
+    results = analyze_papers(papers, topic, include, exclude)
+
+    # Step 5: Generate outline
+    click.echo("Generating outline...")
+    outline = generate_literature_review_outline(topic, papers)
+    print(outline)
+    click.echo("Outline generated successfully!")
     
     # Step 5: Report results
     click.echo("\nResults:")

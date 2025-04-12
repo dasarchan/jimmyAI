@@ -21,7 +21,6 @@ def upload_papers(papers: List[Paper], client) -> Dict[str, Dict[str, Any]]:
     Returns:
         dict: Mapping of paper IDs to file URIs
     """
-    paper_uris = {}
     
     # Create a temporary directory to store downloads
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -51,20 +50,14 @@ def upload_papers(papers: List[Paper], client) -> Dict[str, Dict[str, Any]]:
                 # Update the paper object with upload info
                 paper.uploaded = True
                 paper.file_uri = uploaded_file.uri
-                
-                # Store the file URI for later use with Gemini
-                paper_uris[paper_id] = {
-                    "uri": uploaded_file.uri,
-                    "mime_type": paper.mime_type,
-                    "title": paper.title
-                }
-                
+                paper.mime_type = "application/pdf"
+
                 time.sleep(1)
                 
             except Exception as e:
                 print(f"Error processing {paper_id}: {e}")
     
-    return paper_uris
+    return papers
 
 # The extract_metadata function is no longer needed since we have the Paper class
 # with proper conversion methods like from_arxiv_result and to_dict

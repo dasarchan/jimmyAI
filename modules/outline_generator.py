@@ -11,21 +11,21 @@ Module for generating literature review outlines using Google's Gemini AI.
 # Configure the Gemini API
 from modules.ai_analyzer import client
 
-def generate_outline(research_question: str, papers: Dict[str, Paper], max_sections=5):
+def generate_outline(research_question: str, papers: List[Paper], max_sections=5):
     """
     Generate a structured outline for a literature review based on relevant papers.
     
     Args:
         research_question (str): The main research question
-        papers (Dict[str, Paper]): Dictionary of paper titles mapped to Paper objects
+        papers (List[Paper]): List of Paper objects
         max_sections (int): Maximum number of main sections to include
         
     Returns:
         dict: JSON structured outline for the literature review
     """
     # Prepare sources list for the prompt
-    sources_list = "\n".join([f"- {title}: {paper.authors[0] if paper.authors else 'Unknown'} et al., \"{paper.abstract[:100]}...\"" 
-                             for title, paper in papers.items()])
+    sources_list = "\n".join([f"- {paper.title}: {paper.authors[0] if paper.authors else 'Unknown'} et al., \"{paper.abstract[:100]}...\""
+                             for paper in papers])
     
     prompt = f"""
     You are an expert academic researcher tasked with organizing a literature review outline.
@@ -93,13 +93,13 @@ def generate_outline(research_question: str, papers: Dict[str, Paper], max_secti
             "conclusion": "Error generating outline"
         }
 
-def generate_literature_review_outline(research_question: str, relevant_papers: Dict[str, Paper], topic_keywords: List[str] = None):
+def generate_literature_review_outline(research_question: str, relevant_papers: List[Paper], topic_keywords: List[str] = None):
     """
     Generate a literature review outline given a research question and relevant papers.
     
     Args:
         research_question (str): The main research question
-        relevant_papers (Dict[str, Paper]): Dictionary mapping titles to Paper objects
+        relevant_papers (List[Paper]): List of Paper objects
         topic_keywords (List[str]): Optional list of keywords to emphasize
         
     Returns:
@@ -109,8 +109,7 @@ def generate_literature_review_outline(research_question: str, relevant_papers: 
     print(f"Using {len(relevant_papers)} relevant papers")
     
     # Filter to only include papers marked as relevant
-    filtered_papers = {title: paper for title, paper in relevant_papers.items() 
-                      if paper.is_relevant == True}
+    filtered_papers = [paper for paper in relevant_papers if paper.is_relevant == True]
     
     if not filtered_papers:
         print("Warning: No relevant papers found. Using all provided papers.")
@@ -166,13 +165,9 @@ def test_generate_outline():
     )
     
     research_question = "What are the effects of climate change on marine biodiversity?"
-    sources = {
-        "Climate Change and Marine Life": paper1,
-        "Biodiversity in a Changing World": paper2,
-        "Marine Ecosystems and Climate": paper3
-    }
+    papers = [paper1, paper2, paper3]
     
-    outline = generate_outline(research_question, sources)
+    outline = generate_outline(research_question, papers)
     print(json.dumps(outline, indent=2))
 
 if __name__ == "__main__":
