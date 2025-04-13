@@ -57,5 +57,29 @@ def fetch_papers(query, max_results=50, sort_by=arxiv.SortCriterion.SubmittedDat
     # Convert arxiv.Result objects to Paper objects
 
     results = [Paper.from_arxiv_result(paper) for paper in results]
+    for paper in results:
+        paper.bibtex = populate_bibtex(paper)
+        print(paper.bibtex)
 
-    return results 
+    return results
+
+def populate_bibtex(paper):
+    """
+    Populate BibTeX entry for a given paper.
+    
+    Args:
+        paper (Paper): Paper object containing metadata
+        
+    Returns:
+        str: BibTeX entry as a string
+    """
+    bibtex = f"""
+    @article{{{paper.entry_id},
+        title={{{paper.title}}},
+        author={{{' and '.join(paper.authors)}}},
+        journal={{{paper.categories[0] if paper.categories else 'Unknown'}}},
+        year={{{paper.published_date.year}}},
+        url={{{paper.pdf_url}}}
+    }}
+    """
+    return bibtex

@@ -20,6 +20,7 @@ class Paper:
     published_date: datetime
     pdf_url: str
     entry_id: str  # arXiv entry ID
+    bibtex: Optional[str] = None
     
     # Classification metadata
     categories: List[str]
