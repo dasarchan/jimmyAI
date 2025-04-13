@@ -5,7 +5,8 @@ import Image from "next/image"
 import geminiLogo from "@/gemini-logo.png"
 import prismaLogo from "@/prisma.png"
 import agentLogo from "@/agent.png"
-
+import llamaIndexLogo from "@/llamaindex.webp"
+import googleLogo from "@/google.jpg"
 export default function Home() {
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -40,9 +41,9 @@ export default function Home() {
       <section className="py-28 bg-white">
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
           <div>
-            <div className="inline-block mb-3 px-3 py-1 bg-[#F1F5FE] rounded-full">
+            {/* <div className="inline-block mb-3 px-3 py-1 bg-[#F1F5FE] rounded-full">
               <span className="text-sm text-[#4285F4] font-medium">Powered by Gemini 2.0 Flash</span>
-            </div>
+            </div> */}
             <h1 className="font-sans text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight mb-6">
               Literature Reviews, <span className="text-[#4285F4]">Agentically Automated</span>
             </h1>
@@ -59,15 +60,43 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="relative">
+          <div className="relative flex flex-col items-center">
             <div className="absolute -z-10 blur-3xl rounded-full w-64 h-64 bg-[#EA4335]/10 -top-10 -left-10"></div>
             <div className="absolute -z-10 blur-3xl rounded-full w-64 h-64 bg-[#FBBC05]/10 -bottom-10 -right-10"></div>
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+            
+            {/* Agent Image - Rounded */}
+            <div className="relative w-[480px] h-[480px] rounded-full overflow-hidden border-4 border-white shadow-xl mb-8">
               <Image
                 src={agentLogo}
-                alt="Agent logo"
-                className="w-full rounded-full"
+                alt="AI Agent"
+                fill
+                className="w-full h-full object-cover"
               />
+            </div>
+            
+            {/* Powered By Section */}
+            <div className="text-center">
+              <p className="text-gray-500 mb-4 font-light text-sm uppercase tracking-wider">powered by:</p>
+              <div className="flex flex-row items-center justify-center space-x-6">
+                <div className="h-12 w-auto relative">
+                  <Image 
+                    src={googleLogo} 
+                    alt="Google" 
+                    height={100} 
+                    width={200} 
+                    className="object-contain"
+                  />
+                </div>
+                <div className="h-12 w-auto relative">
+                  <Image 
+                    src={llamaIndexLogo} 
+                    alt="LlamaIndex" 
+                    height={80} 
+                    width={200} 
+                    className="object-contain"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
