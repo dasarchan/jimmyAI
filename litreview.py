@@ -14,6 +14,7 @@ from modules.paper_processor import upload_papers
 from modules.ai_analyzer import filter_papers, client, generate_queries_gemini, get_inclusion_exclusion_criteria
 from modules.outline_generator import generate_literature_review_outline
 from modules.paper import Paper
+from modules.rag import create_index, write_lit_review_section
 
 @click.group()
 def cli():
@@ -60,13 +61,12 @@ def search(topic, max_papers):
     outline = generate_literature_review_outline(topic, papers)
     print(outline)
     click.echo("Outline generated successfully!")
-    
-    # Step 5: Report results
-    click.echo("\nResults:")
-    for title, relevance in results.items():
-        relevance_text = "Relevant" if relevance == "yes" else "Not relevant"
-        click.echo(f"- {title}: {relevance_text}")
-    
+
+    # For each section, write it
+    # TODO: logic to recursively go through outline
+    index = create_index(papers)
+    write_lit_review_section(index, query)
+        
     click.echo("\nLiterature review complete!")
 
 if __name__ == '__main__':
