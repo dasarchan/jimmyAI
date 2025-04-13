@@ -58,6 +58,57 @@ export default function SearchPage() {
   const [totalResults, setTotalResults] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [statusMessage, setStatusMessage] = useState("")
+  const [statusLog, setStatusLog] = useState<string[]>([])
+  const [currentStatusIndex, setCurrentStatusIndex] = useState(0)
+  const [receivedServerMessages, setReceivedServerMessages] = useState<Set<string>>(new Set());
+
+  const keyStatusMessages = [
+    "Starting literature review",
+    "Generating optimized search query",
+    "Fetching papers from arXiv",
+    "Uploading papers to Google AI",
+    "Analyzing and filtering papers",
+    "Generating outline",
+    "Generating full report",
+    "Literature review complete"
+  ]
+
+  useEffect(() => {
+    let statusInterval: NodeJS.Timeout | null = null;
+    
+    if (isLoading) {
+      setStatusMessage(keyStatusMessages[0]);
+      setStatusLog([keyStatusMessages[0]]);
+      setCurrentStatusIndex(0);
+      
+      let displayedIndex = 0;
+      statusInterval = setInterval(() => {
+        if (displayedIndex < keyStatusMessages.length - 1) {
+          displayedIndex++;
+          const newMessage = keyStatusMessages[displayedIndex];
+          
+          setStatusMessage(newMessage);
+          setStatusLog(prev => {
+            if (!prev.includes(newMessage)) {
+              return [...prev, newMessage];
+            }
+            return prev;
+          });
+          
+          if (newMessage === "Literature review complete") {
+            if (statusInterval) clearInterval(statusInterval);
+          }
+        } else {
+          if (statusInterval) clearInterval(statusInterval);
+        }
+      }, 5000);
+    }
+    
+    return () => {
+      if (statusInterval) clearInterval(statusInterval);
+    };
+  }, [isLoading]);
 
   const toggleExpand = (id: number) => {
     setExpandedResult(expandedResult === id ? null : id)
@@ -84,17 +135,86 @@ export default function SearchPage() {
         throw new Error('Search request failed')
       }
       
-      const data: SearchResponse = await response.json()
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error('Response body is not readable')
       
-      setPapers(data.papers)
-      setFinalReport(data.final_report)
-      setFormattedQuery(data.formattedQuery)
-      setQueryTime(data.queryTime)
-      setTotalResults(data.totalResults)
+      const decoder = new TextDecoder()
+      let partialChunk = ''
+      
+      const processStream = async () => {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          
+          const chunk = partialChunk + decoder.decode(value, { stream: true })
+          
+          const lines = chunk.split('\n')
+          partialChunk = lines.pop() || ''
+          
+          for (const line of lines) {
+            if (!line.trim()) continue
+            
+            try {
+              for (const keyStatus of keyStatusMessages) {
+                if (line.includes(keyStatus)) {
+                  const newStatus = line.trim()
+                  if (newStatus === statusMessage) {
+                    break;
+                  }
+                  
+                  setStatusMessage(newStatus)
+                  
+                  setStatusLog(prev => {
+                    if (!prev.includes(newStatus)) {
+                      return [...prev, newStatus]
+                    }
+                    return prev
+                  })
+                  
+                  const statusIndex = keyStatusMessages.findIndex(s => s === keyStatus);
+                  if (statusIndex !== -1) {
+                    setCurrentStatusIndex(statusIndex);
+                  }
+                  
+                  break
+                }
+              }
+              
+              if (line.includes("final_report") || line.startsWith("{")) {
+                try {
+                  const data = JSON.parse(line)
+                  if (data.papers || data.final_report) {
+                    setPapers(data.papers || [])
+                    setFinalReport(data.final_report || "")
+                    setFormattedQuery(data.formattedQuery || "")
+                    setQueryTime(data.queryTime || 0)
+                    setTotalResults(data.totalResults || 0)
+                    setIsLoading(false)
+                    return
+                  }
+                } catch (e) {
+                  // Not valid JSON, continue processing as text
+                }
+              }
+            } catch (e) {
+              console.error("Error processing line:", e)
+            }
+          }
+        }
+        
+        setError("Completed without receiving proper results. Please try again.")
+        setIsLoading(false)
+      }
+      
+      processStream().catch(err => {
+        console.error("Error processing stream:", err)
+        setError("Failed to process search results. Please try again.")
+        setIsLoading(false)
+      })
+      
     } catch (err) {
       setError("Failed to fetch search results. Please try again.")
       console.error("Search error:", err)
-    } finally {
       setIsLoading(false)
     }
   }
@@ -125,6 +245,32 @@ export default function SearchPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const renderLoadingState = () => {
+    return (
+      <div className="py-12 text-center">
+        <div className="flex flex-col items-center">
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-solid border-[#4285F4] border-r-transparent align-[-0.125em]"></div>
+          <p className="mt-5 text-gray-700 font-medium text-lg">{statusMessage}</p>
+          <p className="mt-2 text-gray-500 text-sm">Please wait while we process your request...</p>
+        </div>
+        
+        <div className="mt-8 max-w-md mx-auto">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 max-h-60 overflow-y-auto text-left">
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Processing Status:</h4>
+            <ul className="space-y-3">
+              {statusLog.map((msg, index) => (
+                <li key={index} className="text-sm text-gray-600 flex items-start">
+                  <CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-[#4285F4]" />
+                  <span>{msg}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -333,11 +479,9 @@ export default function SearchPage() {
                   <Button 
                     className="w-full bg-[#4285F4] hover:bg-[#3367D6] rounded-lg shadow-sm"
                     onClick={() => {
-                      // Collect filter values and call applyFilters
                       const filters = {
                         yearFrom: "2018",
                         yearTo: "2023",
-                        // Add other filter values here
                       }
                       applyFilters(filters)
                     }}
@@ -386,12 +530,7 @@ export default function SearchPage() {
                   </div>
                 )}
 
-                {isLoading && (
-                  <div className="py-20 text-center">
-                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#4285F4] border-r-transparent align-[-0.125em]"></div>
-                    <p className="mt-4 text-gray-500">Searching for relevant literature...</p>
-                  </div>
-                )}
+                {isLoading && renderLoadingState()}
 
                 {error && (
                   <div className="py-10 text-center">
