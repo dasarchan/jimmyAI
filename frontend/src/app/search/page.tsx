@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import {
   Search,
@@ -27,74 +27,103 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
-// Mock data for demonstration
-const mockResults = [
-  {
-    id: 1,
-    title: "Systematic Review of Machine Learning Applications in Educational Research",
-    authors: "Johnson, A., Smith, B., & Williams, C.",
-    journal: "Journal of Educational Technology",
-    year: 2022,
-    abstract:
-      "This systematic review examines the applications of machine learning in educational research over the past decade. The findings indicate a significant increase in the use of predictive modeling for student performance and engagement analysis.",
-    relevanceScore: 92,
-    keyFindings: [
-      "Machine learning models achieved 87% accuracy in predicting student performance",
-      "Natural language processing techniques were most commonly applied to analyze student feedback",
-      "Supervised learning approaches dominated the methodological landscape (78% of studies)",
-    ],
-    methodology: "Quantitative analysis of 156 peer-reviewed studies published between 2012-2022",
-    prismaElements: ["Identification", "Screening", "Eligibility", "Included"],
-  },
-  {
-    id: 2,
-    title: "Artificial Intelligence in Higher Education: A Review of Current Applications and Future Directions",
-    authors: "Garcia, D., Chen, H., & Patel, S.",
-    journal: "International Journal of Educational Technology in Higher Education",
-    year: 2023,
-    abstract:
-      "This review explores the current landscape of artificial intelligence applications in higher education settings. The paper identifies key trends, challenges, and opportunities for AI integration in teaching, learning, and administrative processes.",
-    relevanceScore: 88,
-    keyFindings: [
-      "Chatbots and virtual assistants are the most widely implemented AI tools in higher education",
-      "Ethical considerations and data privacy remain significant barriers to adoption",
-      "Personalized learning pathways show the most promising educational outcomes",
-    ],
-    methodology: "Thematic analysis of 87 case studies from institutions across 23 countries",
-    prismaElements: ["Identification", "Screening", "Eligibility"],
-  },
-  {
-    id: 3,
-    title: "The Impact of AI-Powered Literature Review Tools on Academic Research Productivity",
-    authors: "Lee, J., Thompson, R., & Nguyen, T.",
-    journal: "Digital Scholarship in the Humanities",
-    year: 2023,
-    abstract:
-      "This study investigates how AI-powered literature review tools affect research productivity and quality in academic settings. Through a mixed-methods approach, the researchers document significant time savings and increased comprehensiveness when using AI assistants for literature reviews.",
-    relevanceScore: 95,
-    keyFindings: [
-      "Researchers using AI tools completed literature reviews 68% faster than control groups",
-      "AI-assisted reviews identified 23% more relevant sources on average",
-      "Junior researchers benefited more significantly than senior researchers",
-    ],
-    methodology: "Mixed-methods study with 42 researchers across multiple disciplines",
-    prismaElements: ["Identification", "Screening", "Eligibility", "Included"],
-  },
-]
+// Define types for our API responses
+interface SearchResponse {
+  query: string;
+  formattedQuery: string;
+  queryTime: number;
+  totalResults: number;
+  results: Result[];
+}
+
+interface Result {
+  id: number;
+  title: string;
+  authors: string;
+  journal: string;
+  year: number;
+  abstract: string;
+  relevanceScore: number;
+  keyFindings: string[];
+  methodology: string;
+  prismaElements: string[];
+}
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [expandedResult, setExpandedResult] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState("all")
+  const [results, setResults] = useState<Result[]>([])
+  const [formattedQuery, setFormattedQuery] = useState("")
+  const [queryTime, setQueryTime] = useState(0)
+  const [totalResults, setTotalResults] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const toggleExpand = (id: number) => {
     setExpandedResult(expandedResult === id ? null : id)
   }
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
-    // In a real implementation, this would trigger the search
-    console.log("Searching for:", searchQuery)
+    
+    if (!searchQuery.trim()) return
+    
+    setIsLoading(true)
+    setError("")
+    
+    try {
+      const response = await fetch('http://localhost:8000/api/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: searchQuery }),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Search request failed')
+      }
+      
+      const data: SearchResponse = await response.json()
+      
+      setResults(data.results)
+      setFormattedQuery(data.formattedQuery)
+      setQueryTime(data.queryTime)
+      setTotalResults(data.totalResults)
+    } catch (err) {
+      setError("Failed to fetch search results. Please try again.")
+      console.error("Search error:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const applyFilters = async (filters: any) => {
+    setIsLoading(true)
+    
+    try {
+      const response = await fetch('http://localhost:8000/api/filters', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filters),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Filter request failed')
+      }
+      
+      const data = await response.json()
+      setResults(data.results)
+      setTotalResults(data.totalResults)
+    } catch (err) {
+      setError("Failed to apply filters. Please try again.")
+      console.error("Filter error:", err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -303,7 +332,20 @@ export default function SearchPage() {
                     </div>
                   </div>
 
-                  <Button className="w-full bg-[#4285F4] hover:bg-[#3367D6] rounded-lg shadow-sm">Apply Filters</Button>
+                  <Button 
+                    className="w-full bg-[#4285F4] hover:bg-[#3367D6] rounded-lg shadow-sm"
+                    onClick={() => {
+                      // Collect filter values and call applyFilters
+                      const filters = {
+                        yearFrom: "2018",
+                        yearTo: "2023",
+                        // Add other filter values here
+                      }
+                      applyFilters(filters)
+                    }}
+                  >
+                    Apply Filters
+                  </Button>
                 </div>
               </div>
             </div>
@@ -329,211 +371,240 @@ export default function SearchPage() {
                   </div>
                 </div>
 
-                <div className="mb-8">
-                  <div className="bg-[#F8FAFF] border border-gray-100 rounded-xl p-5 shadow-sm">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Search Query</h3>
-                    <p className="text-gray-600 text-sm font-mono bg-white p-3 rounded-lg border border-gray-100">
-                      (("artificial intelligence" OR "machine learning" OR "AI") AND ("education" OR "learning" OR
-                      "teaching") AND ("literature review" OR "systematic review"))
-                    </p>
-                    <div className="mt-3 flex items-center text-sm text-gray-500">
-                      <Clock className="h-4 w-4 mr-1 text-[#FBBC05]" />
-                      <span className="font-light">Query generated in 3.2 seconds</span>
-                      <span className="mx-2">•</span>
-                      <span className="font-light">42 results found</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Tabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-4 mb-6 bg-[#F1F5FE]">
-                    <TabsTrigger 
-                      value="all" 
-                      className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
-                    >
-                      All Results (42)
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="high" 
-                      className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
-                    >
-                      High Relevance (18)
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="medium"
-                      className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
-                    >
-                      Medium Relevance (14)
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="low"
-                      className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
-                    >
-                      Low Relevance (10)
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="all" className="space-y-6">
-                    {mockResults.map((result) => (
-                      <Card key={result.id} className="border-gray-100 overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between items-start">
-                            <div className="flex-1">
-                              <CardTitle className="font-sans text-lg font-semibold text-gray-900 hover:text-[#4285F4] transition-colors">
-                                {result.title}
-                              </CardTitle>
-                              <p className="text-sm text-gray-500 mt-1 font-light">
-                                {result.authors} • {result.journal} • {result.year}
-                              </p>
-                            </div>
-                            <Badge className={`
-                              ${result.relevanceScore > 90 
-                                ? 'bg-[#34A853]/10 text-[#34A853]' 
-                                : result.relevanceScore > 80 
-                                  ? 'bg-[#FBBC05]/10 text-[#FBBC05]' 
-                                  : 'bg-[#EA4335]/10 text-[#EA4335]'
-                              } border-none ml-2 rounded-full px-3`}
-                            >
-                              {result.relevanceScore}% Relevant
-                            </Badge>
-                          </div>
-                        </CardHeader>
-
-                        <CardContent className="pt-2">
-                          <p className="text-gray-700 text-sm font-light">{result.abstract}</p>
-
-                          <Collapsible
-                            open={expandedResult === result.id}
-                            onOpenChange={() => toggleExpand(result.id)}
-                            className="mt-4"
-                          >
-                            <CollapsibleTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-[#4285F4] hover:text-[#3367D6] hover:bg-[#F1F5FE] p-0 h-auto"
-                              >
-                                <span>{expandedResult === result.id ? "Show Less" : "Show More"}</span>
-                                {expandedResult === result.id ? (
-                                  <ChevronUp className="h-4 w-4 ml-1" />
-                                ) : (
-                                  <ChevronDown className="h-4 w-4 ml-1" />
-                                )}
-                              </Button>
-                            </CollapsibleTrigger>
-
-                            <CollapsibleContent className="mt-6 space-y-5">
-                              <div>
-                                <h4 className="text-sm font-medium text-gray-700 mb-3">Key Findings</h4>
-                                <ul className="list-disc pl-5 text-sm text-gray-600 space-y-2 font-light">
-                                  {result.keyFindings.map((finding, index) => (
-                                    <li key={index}>{finding}</li>
-                                  ))}
-                                </ul>
-                              </div>
-
-                              <div>
-                                <h4 className="text-sm font-medium text-gray-700 mb-3">Methodology</h4>
-                                <p className="text-sm text-gray-600 font-light">{result.methodology}</p>
-                              </div>
-
-                              <div>
-                                <h4 className="text-sm font-medium text-gray-700 mb-3">PRISMA Elements</h4>
-                                <div className="flex flex-wrap gap-2">
-                                  {result.prismaElements.map((element, index) => (
-                                    <Badge 
-                                      key={index} 
-                                      variant="outline" 
-                                      className="bg-[#F1F5FE] text-[#4285F4] border-none rounded-full"
-                                    >
-                                      <CheckCircle className="h-3 w-3 mr-1" />
-                                      {element}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        </CardContent>
-
-                        <CardFooter className="border-t border-gray-100 bg-[#F8FAFF] flex justify-between py-4">
-                          <div className="flex space-x-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="text-xs h-8 rounded-full border-[#4285F4]/30 text-[#4285F4] hover:bg-[#4285F4]/10"
-                            >
-                              <FileText className="h-3 w-3 mr-1" />
-                              Add to Review
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="text-xs h-8 rounded-full border-[#4285F4]/30 text-[#4285F4] hover:bg-[#4285F4]/10"
-                            >
-                              <Download className="h-3 w-3 mr-1" />
-                              Download PDF
-                            </Button>
-                          </div>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-xs h-8 rounded-full text-gray-600 hover:text-[#4285F4] hover:bg-[#4285F4]/5"
-                          >
-                            <ExternalLink className="h-3 w-3 mr-1" />
-                            View Source
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                    ))}
-
-                    <div className="flex justify-center mt-8">
-                      <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm" disabled className="rounded-full border-gray-200">
-                          Previous
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="bg-[#4285F4] text-white border-[#4285F4] rounded-full w-8 h-8 p-0"
-                        >
-                          1
-                        </Button>
-                        <Button variant="outline" size="sm" className="rounded-full border-gray-200 w-8 h-8 p-0">
-                          2
-                        </Button>
-                        <Button variant="outline" size="sm" className="rounded-full border-gray-200 w-8 h-8 p-0">
-                          3
-                        </Button>
-                        <span className="text-gray-500">...</span>
-                        <Button variant="outline" size="sm" className="rounded-full border-gray-200 w-8 h-8 p-0">
-                          8
-                        </Button>
-                        <Button variant="outline" size="sm" className="rounded-full border-gray-200">
-                          Next
-                        </Button>
+                {searchQuery && (
+                  <div className="mb-8">
+                    <div className="bg-[#F8FAFF] border border-gray-100 rounded-xl p-5 shadow-sm">
+                      <h3 className="text-sm font-medium text-gray-700 mb-3">Search Query</h3>
+                      <p className="text-gray-600 text-sm font-mono bg-white p-3 rounded-lg border border-gray-100">
+                        {formattedQuery || `"${searchQuery}"`}
+                      </p>
+                      <div className="mt-3 flex items-center text-sm text-gray-500">
+                        <Clock className="h-4 w-4 mr-1 text-[#FBBC05]" />
+                        <span className="font-light">Query generated in {queryTime || "..."} seconds</span>
+                        <span className="mx-2">•</span>
+                        <span className="font-light">{totalResults || 0} results found</span>
                       </div>
                     </div>
-                  </TabsContent>
+                  </div>
+                )}
 
-                  <TabsContent value="high">
-                    <div className="py-12 text-center text-gray-500 font-light">
-                      Switch to the "All Results" tab to see the demonstration data.
-                    </div>
-                  </TabsContent>
+                {isLoading && (
+                  <div className="py-20 text-center">
+                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#4285F4] border-r-transparent align-[-0.125em]"></div>
+                    <p className="mt-4 text-gray-500">Searching for relevant literature...</p>
+                  </div>
+                )}
 
-                  <TabsContent value="medium">
-                    <div className="py-12 text-center text-gray-500 font-light">
-                      Switch to the "All Results" tab to see the demonstration data.
-                    </div>
-                  </TabsContent>
+                {error && (
+                  <div className="py-10 text-center">
+                    <AlertCircle className="h-10 w-10 text-[#EA4335] mx-auto mb-4" />
+                    <p className="text-gray-700">{error}</p>
+                    <Button 
+                      onClick={() => handleSearch} 
+                      className="mt-4 bg-[#4285F4] hover:bg-[#3367D6]"
+                    >
+                      Try Again
+                    </Button>
+                  </div>
+                )}
 
-                  <TabsContent value="low">
-                    <div className="py-12 text-center text-gray-500 font-light">
-                      Switch to the "All Results" tab to see the demonstration data.
-                    </div>
-                  </TabsContent>
-                </Tabs>
+                {!isLoading && !error && (
+                  <Tabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
+                    <TabsList className="grid grid-cols-4 mb-6 bg-[#F1F5FE]">
+                      <TabsTrigger 
+                        value="all" 
+                        className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
+                      >
+                        All Results ({totalResults})
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="high" 
+                        className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
+                      >
+                        High Relevance ({results.filter(r => r.relevanceScore > 90).length})
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="medium"
+                        className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
+                      >
+                        Medium Relevance ({results.filter(r => r.relevanceScore > 80 && r.relevanceScore <= 90).length})
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="low"
+                        className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
+                      >
+                        Low Relevance ({results.filter(r => r.relevanceScore <= 80).length})
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="all" className="space-y-6">
+                      {results.length > 0 ? (
+                        results.map((result) => (
+                          <Card key={result.id} className="border-gray-100 overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                            <CardHeader className="pb-2">
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <CardTitle className="font-sans text-lg font-semibold text-gray-900 hover:text-[#4285F4] transition-colors">
+                                    {result.title}
+                                  </CardTitle>
+                                  <p className="text-sm text-gray-500 mt-1 font-light">
+                                    {result.authors} • {result.journal} • {result.year}
+                                  </p>
+                                </div>
+                                <Badge className={`
+                                  ${result.relevanceScore > 90 
+                                    ? 'bg-[#34A853]/10 text-[#34A853]' 
+                                    : result.relevanceScore > 80 
+                                      ? 'bg-[#FBBC05]/10 text-[#FBBC05]' 
+                                      : 'bg-[#EA4335]/10 text-[#EA4335]'
+                                  } border-none ml-2 rounded-full px-3`}
+                                >
+                                  {result.relevanceScore}% Relevant
+                                </Badge>
+                              </div>
+                            </CardHeader>
+
+                            <CardContent className="pt-2">
+                              <p className="text-gray-700 text-sm font-light">{result.abstract}</p>
+
+                              <Collapsible
+                                open={expandedResult === result.id}
+                                onOpenChange={() => toggleExpand(result.id)}
+                                className="mt-4"
+                              >
+                                <CollapsibleTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-[#4285F4] hover:text-[#3367D6] hover:bg-[#F1F5FE] p-0 h-auto"
+                                  >
+                                    <span>{expandedResult === result.id ? "Show Less" : "Show More"}</span>
+                                    {expandedResult === result.id ? (
+                                      <ChevronUp className="h-4 w-4 ml-1" />
+                                    ) : (
+                                      <ChevronDown className="h-4 w-4 ml-1" />
+                                    )}
+                                  </Button>
+                                </CollapsibleTrigger>
+
+                                <CollapsibleContent className="mt-6 space-y-5">
+                                  <div>
+                                    <h4 className="text-sm font-medium text-gray-700 mb-3">Key Findings</h4>
+                                    <ul className="list-disc pl-5 text-sm text-gray-600 space-y-2 font-light">
+                                      {result.keyFindings.map((finding, index) => (
+                                        <li key={index}>{finding}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+
+                                  <div>
+                                    <h4 className="text-sm font-medium text-gray-700 mb-3">Methodology</h4>
+                                    <p className="text-sm text-gray-600 font-light">{result.methodology}</p>
+                                  </div>
+
+                                  <div>
+                                    <h4 className="text-sm font-medium text-gray-700 mb-3">PRISMA Elements</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                      {result.prismaElements.map((element, index) => (
+                                        <Badge 
+                                          key={index} 
+                                          variant="outline" 
+                                          className="bg-[#F1F5FE] text-[#4285F4] border-none rounded-full"
+                                        >
+                                          <CheckCircle className="h-3 w-3 mr-1" />
+                                          {element}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </CollapsibleContent>
+                              </Collapsible>
+                            </CardContent>
+
+                            <CardFooter className="border-t border-gray-100 bg-[#F8FAFF] flex justify-between py-4">
+                              <div className="flex space-x-2">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="text-xs h-8 rounded-full border-[#4285F4]/30 text-[#4285F4] hover:bg-[#4285F4]/10"
+                                >
+                                  <FileText className="h-3 w-3 mr-1" />
+                                  Add to Review
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="text-xs h-8 rounded-full border-[#4285F4]/30 text-[#4285F4] hover:bg-[#4285F4]/10"
+                                >
+                                  <Download className="h-3 w-3 mr-1" />
+                                  Download PDF
+                                </Button>
+                              </div>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-xs h-8 rounded-full text-gray-600 hover:text-[#4285F4] hover:bg-[#4285F4]/5"
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                View Source
+                              </Button>
+                            </CardFooter>
+                          </Card>
+                        ))
+                      ) : (
+                        <div className="py-12 text-center text-gray-500">
+                          {searchQuery ? "No results found. Try a different search term." : "Enter a search query to find relevant literature."}
+                        </div>
+                      )}
+
+                      <div className="flex justify-center mt-8">
+                        <div className="flex items-center space-x-2">
+                          <Button variant="outline" size="sm" disabled className="rounded-full border-gray-200">
+                            Previous
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="bg-[#4285F4] text-white border-[#4285F4] rounded-full w-8 h-8 p-0"
+                          >
+                            1
+                          </Button>
+                          <Button variant="outline" size="sm" className="rounded-full border-gray-200 w-8 h-8 p-0">
+                            2
+                          </Button>
+                          <Button variant="outline" size="sm" className="rounded-full border-gray-200 w-8 h-8 p-0">
+                            3
+                          </Button>
+                          <span className="text-gray-500">...</span>
+                          <Button variant="outline" size="sm" className="rounded-full border-gray-200 w-8 h-8 p-0">
+                            8
+                          </Button>
+                          <Button variant="outline" size="sm" className="rounded-full border-gray-200">
+                            Next
+                          </Button>
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="high">
+                      <div className="py-12 text-center text-gray-500 font-light">
+                        Switch to the "All Results" tab to see the demonstration data.
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="medium">
+                      <div className="py-12 text-center text-gray-500 font-light">
+                        Switch to the "All Results" tab to see the demonstration data.
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="low">
+                      <div className="py-12 text-center text-gray-500 font-light">
+                        Switch to the "All Results" tab to see the demonstration data.
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                )}
               </div>
 
               <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">

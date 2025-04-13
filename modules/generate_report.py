@@ -5,6 +5,7 @@ from datetime import datetime
 from modules.rag import write_lit_review_section
 
 import os
+import dotenv
 dotenv.load_dotenv()
 
 from llama_index.core import VectorStoreIndex, Document
