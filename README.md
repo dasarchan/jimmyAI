@@ -10,7 +10,7 @@ https://docs.google.com/presentation/d/1CqRKYYoL-Dd7HGOkAzyJYtjSjO2_LLn9axVMTfLM
 
 - Generate optimized search queries for arXiv based on research topics and inclusion/exclusion criteria
 - Automatically download relevant papers as PDFs
-- Analyze paper relevance using Google's Gemini 2.5 Pro AI model
+- Analyze paper relevance using Google's Gemini 2.0 Flash model
 - Filter and rank papers according to specified criteria
 
 ## Installation
