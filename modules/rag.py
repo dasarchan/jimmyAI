@@ -49,11 +49,12 @@ def query_papers(index: VectorStoreIndex, query: str, top_k: int = 3):
     return retrieved_papers
 
 def write_lit_review_section(index, query, top_k=10):
+    print(f"Writing section: {query}")
     top_papers = query_papers(index, query, top_k=top_k)
     top_papers_formatted = "\n".join(
         [f"- {paper.title} by {', '.join(paper.authors)}{f'\n: BibTeX entry: {paper.bibtex}' if hasattr(paper, 'bibtex') and paper.bibtex else ''}: {paper.relevant_content}" for paper in top_papers]
     )
-    print(f"Top {top_k} papers for query '{query}':")
+    # print(f"Top {top_k} papers for query '{query}':")
     prompt = f"""
     Write a comprehensive literature review section formatted in Markdown based on the following relevant papers:
 
@@ -88,7 +89,7 @@ def write_lit_review_section(index, query, top_k=10):
         contents=contents
     )
 
-    print(f"Response: {response.text}")
+    # print(f"Response: {response.text}")
     return response.text
 
 

@@ -59,7 +59,7 @@ def fetch_papers(query, max_results=50, sort_by=arxiv.SortCriterion.Relevance):
     results = [Paper.from_arxiv_result(paper) for paper in results]
     for paper in results:
         paper.bibtex = populate_bibtex(paper)
-        print(paper.bibtex)
+        # print(paper.bibtex)
 
     return results
 

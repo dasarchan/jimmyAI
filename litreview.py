@@ -30,9 +30,11 @@ def cli():
               help='Maximum number of papers to retrieve')
 def search(topic, max_papers):
     """Run a literature review with the given parameters."""
+    click.echo("\n" + "#"*50)
     click.echo(f"Starting literature review on: {topic}")
     
     # Step 1: Generate search query
+    click.echo("\n" + "#"*50)
     click.echo("Generating optimized search query...")
     include, exclude = get_inclusion_exclusion_criteria(topic, num_criteria=5)
     queries = generate_queries_gemini(topic, num_queries=5)
@@ -42,16 +44,19 @@ def search(topic, max_papers):
     click.echo(f"Search query: {query}")
 
     # Step 2: Fetch paper metadata from arXiv
+    click.echo("\n" + "#"*50)
     click.echo(f"Fetching up to {max_papers} papers from arXiv...")
     papers = fetch_papers(query, max_results=max_papers)
     click.echo(f"Found {len(papers)} papers matching criteria")
     
     # Step 3: Upload papers to Google AI
+    click.echo("\n" + "#"*50)
     click.echo("Uploading papers to Google AI...")
     papers = upload_papers(papers, client)
     click.echo(f"Uploaded {len(papers)} papers")
     
     # # Step 4: Analyze relevance with AI and extract relevant content
+    click.echo("\n" + "#"*50)
     click.echo("Analyzing and filtering papers with Gemini...")
     results = filter_papers(papers, topic, include, exclude)
     click.echo("\nFiltered papers")
@@ -60,6 +65,7 @@ def search(topic, max_papers):
             print(paper.title)
 
     # Step 5: Generate outline
+    click.echo("\n" + "#"*50)
     click.echo("Generating outline...")
     print(f"<papers>")
     relevant_papers = []
@@ -73,7 +79,6 @@ def search(topic, max_papers):
             "url": paper.pdf_url
         }
         relevant_papers.append(paper_data)
-    papers = relevant_papers
     relevant_papers = {
         "papers": relevant_papers
     }
@@ -84,6 +89,8 @@ def search(topic, max_papers):
     click.echo("Outline generated successfully!")
 
     # For each section, write it
+    click.echo("\n" + "#"*50)
+    click.echo("Generating full report...")
     index = create_index(papers)
 
     full_outline = generate_full_report(outline, index)
