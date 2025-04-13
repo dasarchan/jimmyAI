@@ -9,7 +9,9 @@ from llama_index.core.retrievers import VectorIndexRetriever
 
 from modules.ai_analyzer import client
 
-llama_index_api_key = os.getenv("LLAMA_INDEX_API_KEY") 
+llama_index_api_key = os.getenv("LLAMA_INDEX_API_KEY")
+api_key = os.getenv("GOOGLE_API_KEY")
+
 
 def create_index(papers: list[Paper]) -> VectorStoreIndex:
     """Create a vector index from a list of text strings"""

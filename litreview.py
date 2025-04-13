@@ -15,6 +15,7 @@ from modules.ai_analyzer import filter_papers, client, generate_queries_gemini, 
 from modules.outline_generator import generate_literature_review_outline
 from modules.paper import Paper
 from modules.rag import create_index, write_lit_review_section
+from modules.generate_report import generate_full_report
 
 @click.group()
 def cli():
@@ -66,7 +67,9 @@ def search(topic, max_papers):
     # TODO: logic to recursively go through outline
     index = create_index(papers)
     write_lit_review_section(index, query)
-        
+
+    generate_full_report(outline, papers)
+
     click.echo("\nLiterature review complete!")
 
 if __name__ == '__main__':
