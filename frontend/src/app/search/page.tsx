@@ -180,10 +180,7 @@ export default function SearchPage() {
             </div>
             <div className="mt-4 flex flex-wrap gap-3">
               <Badge variant="outline" className="bg-[#F1F5FE] text-[#4285F4] border-none px-3 py-1 text-sm rounded-full">
-                PRISMA Guidelines
-              </Badge>
-              <Badge variant="outline" className="bg-[#F1F5FE] text-[#4285F4] border-none px-3 py-1 text-sm rounded-full">
-                Educational Technology
+                PRISMA Compliant 
               </Badge>
               <Badge variant="outline" className="bg-[#F1F5FE] text-[#4285F4] border-none px-3 py-1 text-sm rounded-full">
                 Last 5 Years
