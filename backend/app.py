@@ -67,16 +67,11 @@ def search():
         
         # Print the output for debugging
         print(f"Script output: {result.stdout[:200]}...")  # Print first 200 chars
-        final_report = result.split("printing_final_report")[-1]
         # Parse the output to JSON
         try:
             final_report = results.split("<final_report>")[1].split("</final_report>")[0]
-            papers = results.split("<papers>")[1].split("</papers>")
-            results = {
-                "final_report": final_report,
-                "papers": papers
-            } 
-            print(f"Successfully parsed JSON with {len(results.get('results', []))} results")
+            papers = json.loads(results.split("<papers>")[1].split("</papers>"))
+            print(f"Successfully parsed JSON with {len(papers['papers'])} papers")
         except json.JSONDecodeError as e:
             print(f"JSON parsing error: {str(e)}")
             print(f"Raw output: {result.stdout}")
@@ -107,7 +102,8 @@ def search():
             "formattedQuery": formatted_query,
             "queryTime": execution_time,
             "totalResults": len(results),
-            "results": results
+            "final_report": final_report,
+            "papers": papers['papers']
         }
         
         return jsonify(response)
@@ -120,7 +116,8 @@ def search():
             "query": query,
             "queryTime": round(time.time() - start_time, 1),
             "totalResults": 0,
-            "results": []
+            "final_report": "",
+            "papers": []
         }), 500
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
@@ -130,7 +127,8 @@ def search():
             "query": query,
             "queryTime": round(time.time() - start_time, 1),
             "totalResults": 0,
-            "results": []
+            "final_report": "",
+            "papers": []
         }), 500
 
 @app.route('/api/filters', methods=['POST'])

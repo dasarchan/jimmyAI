@@ -9,7 +9,7 @@ import dotenv
 # Load environment variables
 dotenv.load_dotenv()
 
-from modules.arxiv_search import fetch_papers
+from modules.arxiv_search import fetch_papers, generate_search_query
 from modules.paper_processor import upload_papers
 from modules.ai_analyzer import filter_papers, client, generate_queries_gemini, get_inclusion_exclusion_criteria
 from modules.outline_generator import generate_literature_review_outline
@@ -38,7 +38,7 @@ def search(topic, max_papers):
     # queries = generate_queries_gemini(topic, num_queries=5)
 
     # query = " OR ".join([f"({q})" for q in queries])
-    query = ""
+    query = generate_search_query(topic)
 
     click.echo(f"Search query: {query}")
 
@@ -64,16 +64,21 @@ def search(topic, max_papers):
     click.echo("Generating outline...")
     print(f"<papers>")
     relevant_papers = []
+    count = 0
     for paper in papers:
-        if paper.is_relevant:
-            paper_data = {
-                "title": paper.title,
-                "authors": paper.authors,
-                "abstract": paper.abstract,
-                "year": paper.published_date.year if paper.published_date else None,
-                "url": paper.pdf_url
-            }
-            relevant_papers.append(paper_data)
+        count += 1
+        if count > 2: break
+        paper_data = {
+            "title": paper.title,
+            "authors": paper.authors,
+            "abstract": paper.abstract,
+            "year": paper.published_date.year if paper.published_date else None,
+            "url": paper.pdf_url
+        }
+        relevant_papers.append(paper_data)
+    relevant_papers = {
+        "papers": relevant_papers
+    }
     print(json.dumps(relevant_papers, indent=2))
     print(f"</papers>")
     # outline = generate_literature_review_outline(topic, papers)
