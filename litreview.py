@@ -26,7 +26,7 @@ def cli():
 
 @cli.command()
 @click.option('--topic', required=True, help='Main research topic')
-@click.option('--max-papers', default=int(os.getenv('MAX_PAPERS', 10)), 
+@click.option('--max-papers', default=int(os.getenv('MAX_PAPERS', 1)), 
               help='Maximum number of papers to retrieve')
 def search(topic, max_papers):
     """Run a literature review with the given parameters."""
@@ -69,7 +69,7 @@ def search(topic, max_papers):
                 "title": paper.title,
                 "authors": paper.authors,
                 "abstract": paper.abstract,
-                "date": paper.published_date,
+                "year": paper.published_date.year if paper.published_date else None,
                 "url": paper.pdf_url
             }
             relevant_papers.append(paper_data)

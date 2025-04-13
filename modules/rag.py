@@ -48,7 +48,7 @@ def query_papers(index: VectorStoreIndex, query: str, top_k: int = 3):
     # Return both the papers and a formatted response
     return retrieved_papers
 
-def write_lit_review_section(index, query, top_k=30):
+def write_lit_review_section(index, query, top_k=10):
     top_papers = query_papers(index, query, top_k=top_k)
     top_papers_formatted = "\n".join(
         [f"- {paper.title} by {', '.join(paper.authors)}{f'\n: BibTeX entry: {paper.bibtex}' if hasattr(paper, 'bibtex') and paper.bibtex else ''}: {paper.relevant_content}" for paper in top_papers]
