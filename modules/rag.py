@@ -7,10 +7,9 @@ from llama_index.core import VectorStoreIndex, Document
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import VectorIndexRetriever
 
+from modules.ai_analyzer import client
 
-llama_index_api_key = os.getenv("LLAMA_INDEX_API_KEY")
-api_key = os.getenv("GOOGLE_API_KEY")
- 
+llama_index_api_key = os.getenv("LLAMA_INDEX_API_KEY") 
 
 def create_index(papers: list[Paper]) -> VectorStoreIndex:
     """Create a vector index from a list of text strings"""
@@ -25,8 +24,42 @@ def query_papers(index: VectorStoreIndex, query: str, top_k: int = 3):
     response = query_engine.query(query)
     return response
 
-def write_lit_review_section(index, query):
-    pass
+def write_lit_review_section(index, query, top_k):
+    top_papers = query_papers(index, query, top_k=top_k)
+    prompt = f"""
+    Write a comprehensive literature review section based on the following relevant papers:
+
+    {top_papers}
+
+    Follow these guidelines:
+    1. Synthesize the key findings and arguments from the papers, don't just summarize them individually
+    2. Identify common themes, agreements, and disagreements between the papers
+    3. Critically analyze the methodologies and results
+    4. Highlight any research gaps or areas needing further investigation
+    5. Use proper academic tone and style
+    6. Include in-text citations when discussing specific papers
+    7. Ensure logical flow and transitions between ideas
+    8. Focus on how the papers relate to and help answer the research question: {query}
+
+    Structure the review section with:
+    - Clear topic sentences for each paragraph
+    - Supporting evidence from the papers
+    - Critical analysis and synthesis
+    - Smooth transitions between ideas
+    - A concluding paragraph that ties the findings together
+
+    Write the literature review section in a scholarly style while maintaining readability.
+    """
+
+    contents = [{"text": prompt}]
+        
+    # Generate content with the prompt and PDF
+    response = client.models.generate_content(
+        model="gemini-2.0-flash", 
+        contents=contents
+    )
+
+    return response.text
 
 
 
