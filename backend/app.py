@@ -102,7 +102,7 @@ def search():
             "query": query,
             "formattedQuery": formatted_query,
             "queryTime": execution_time,
-            "totalResults": len(results),
+            "totalResults": len(papers['papers']),
             "final_report": final_report,
             "papers": papers['papers']
         }
