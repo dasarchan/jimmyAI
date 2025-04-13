@@ -26,6 +26,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import ReactMarkdown from 'react-markdown'
 
 // Define types for our API responses
 interface SearchResponse {
@@ -425,6 +426,20 @@ export default function SearchPage() {
                       </TabsTrigger>
                     </TabsList>
 
+                    <TabsContent value="final report" className="space-y-6">
+                      <div className="prose prose-blue max-w-none">
+                        {finalReport ? (
+                          <div className="markdown-content bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                            <ReactMarkdown>{finalReport}</ReactMarkdown>
+                          </div>
+                        ) : (
+                          <div className="text-center py-10 text-gray-500">
+                            {searchQuery ? "Perform a search to generate a report" : "Enter a search query to generate a literature review report"}
+                          </div>
+                        )}
+                      </div>
+                    </TabsContent>
+
                     <TabsContent value="all" className="space-y-6">
                       {papers.length > 0 ? (
                         papers.map((result) => (
@@ -464,6 +479,10 @@ export default function SearchPage() {
                                     )}
                                   </Button>
                                 </CollapsibleTrigger>
+<<<<<<< HEAD
+=======
+
+>>>>>>> bda8138 (markdown)
                               </Collapsible>
                             </CardContent>
 
