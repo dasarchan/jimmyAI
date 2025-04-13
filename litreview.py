@@ -69,6 +69,7 @@ def search(topic, max_papers):
         count += 1
         if count > 2: break
         paper_data = {
+            "id": paper.entry_id,
             "title": paper.title,
             "authors": paper.authors,
             "abstract": paper.abstract,

@@ -41,13 +41,9 @@ interface Paper{
   id: number;
   title: string;
   authors: string;
-  journal: string;
   year: number;
   abstract: string;
-  relevanceScore: number;
-  keyFindings: string[];
-  methodology: string;
-  prismaElements: string[];
+  url: string;
 }
 
 export default function SearchPage() {
@@ -440,7 +436,7 @@ export default function SearchPage() {
                                     {result.title}
                                   </CardTitle>
                                   <p className="text-sm text-gray-500 mt-1 font-light">
-                                    {result.authors} • Arxiv • {result.year}
+                                    {result.authors} • {result.year}
                                   </p>
                                 </div>
                               </div>
@@ -468,38 +464,6 @@ export default function SearchPage() {
                                     )}
                                   </Button>
                                 </CollapsibleTrigger>
-
-                                {/* <CollapsibleContent className="mt-6 space-y-5">
-                                  <div>
-                                    <h4 className="text-sm font-medium text-gray-700 mb-3">Key Findings</h4>
-                                    <ul className="list-disc pl-5 text-sm text-gray-600 space-y-2 font-light">
-                                      {result.keyFindings.map((finding, index) => (
-                                        <li key={index}>{finding}</li>
-                                      ))}
-                                    </ul>
-                                  </div>
-
-                                  <div>
-                                    <h4 className="text-sm font-medium text-gray-700 mb-3">Methodology</h4>
-                                    <p className="text-sm text-gray-600 font-light">{result.methodology}</p>
-                                  </div>
-
-                                  <div>
-                                    <h4 className="text-sm font-medium text-gray-700 mb-3">PRISMA Elements</h4>
-                                    <div className="flex flex-wrap gap-2">
-                                      {result.prismaElements.map((element, index) => (
-                                        <Badge 
-                                          key={index} 
-                                          variant="outline" 
-                                          className="bg-[#F1F5FE] text-[#4285F4] border-none rounded-full"
-                                        >
-                                          <CheckCircle className="h-3 w-3 mr-1" />
-                                          {element}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-                                </CollapsibleContent> */}
                               </Collapsible>
                             </CardContent>
 
@@ -526,6 +490,7 @@ export default function SearchPage() {
                                 variant="ghost" 
                                 size="sm" 
                                 className="text-xs h-8 rounded-full text-gray-600 hover:text-[#4285F4] hover:bg-[#4285F4]/5"
+                                onClick={() => window.open(result.url, '_blank')}
                               >
                                 <ExternalLink className="h-3 w-3 mr-1" />
                                 View Source
