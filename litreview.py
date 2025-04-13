@@ -16,7 +16,8 @@ from modules.outline_generator import generate_literature_review_outline
 from modules.paper import Paper
 from modules.rag import create_index, write_lit_review_section
 from modules.generate_report import generate_full_report
-from modules.compile_report import compile_latex_report
+from modules.compile_report import compile_markdown_report
+import json
 
 @click.group()
 def cli():
@@ -60,6 +61,20 @@ def search(topic, max_papers):
 
     # Step 5: Generate outline
     click.echo("Generating outline...")
+    print(f"<papers>")
+    relevant_papers = []
+    for paper in papers:
+        if paper.is_relevant:
+            paper_data = {
+                "title": paper.title,
+                "authors": paper.authors,
+                "abstract": paper.abstract,
+                "date": paper.published_date,
+                "url": paper.pdf_url
+            }
+            relevant_papers.append(paper_data)
+    print(json.dumps(relevant_papers, indent=2))
+    print(f"</papers>")
     outline = generate_literature_review_outline(topic, papers)
     print(outline)
     click.echo("Outline generated successfully!")
@@ -70,9 +85,12 @@ def search(topic, max_papers):
     # write_lit_review_section(index, query)
 
     full_outline = generate_full_report(outline, index)
-    print(full_outline)
+    # print(full_outline)
 
-    compile_latex_report(full_outline)
+    print("<final_report>")
+    print(compile_markdown_report(full_outline))
+    print("</final_report>")
+
 
     click.echo("Full report generated successfully!")
 

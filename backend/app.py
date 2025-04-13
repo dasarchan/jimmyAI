@@ -67,7 +67,7 @@ def search():
         
         # Print the output for debugging
         print(f"Script output: {result.stdout[:200]}...")  # Print first 200 chars
-        
+        final_report = result.split("printing_final_report")[-1]
         # Parse the output to JSON
         try:
             results = json.loads(result.stdout)

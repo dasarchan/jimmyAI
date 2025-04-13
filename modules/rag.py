@@ -55,7 +55,7 @@ def write_lit_review_section(index, query, top_k=30):
     )
     print(f"Top {top_k} papers for query '{query}':")
     prompt = f"""
-    Write a comprehensive literature review section formatted in LaTeX based on the following relevant papers:
+    Write a comprehensive literature review section formatted in Markdown based on the following relevant papers:
 
     {top_papers_formatted}
 
@@ -68,7 +68,7 @@ def write_lit_review_section(index, query, top_k=30):
     6. Include in-text citations when discussing specific papers
     7. Ensure logical flow and transitions between ideas
     8. Focus on how the papers relate to and help answer the research question: {query}
-    9. Add inline citations using \cite{{bibtex}} when referencing info from a paper
+    9. Add inline citations where necessary in a reasonable format.
 
     Structure the review section with:
     - Clear topic sentences for each paragraph
@@ -78,7 +78,6 @@ def write_lit_review_section(index, query, top_k=30):
     - A concluding paragraph that ties the findings together
 
     Write the literature review section in a scholarly style while maintaining readability.
-    Do not add \section or any other headers, but use LaTeX style for citations, equations, etc.
     """
 
     contents = [{"text": prompt}]
