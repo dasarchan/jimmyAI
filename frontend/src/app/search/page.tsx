@@ -148,7 +148,7 @@ export default function SearchPage() {
               Settings
             </Button>
             <div className="w-8 h-8 rounded-full bg-[#4285F4]/10 flex items-center justify-center text-[#4285F4] font-medium">
-              JS
+              CMU
             </div>
           </div>
         </div>

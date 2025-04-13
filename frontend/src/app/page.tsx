@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import geminiLogo from "@/gemini-logo.png"
 import prismaLogo from "@/prisma.png"
+import agentLogo from "@/agent.png"
 
 export default function Home() {
   return (
@@ -56,25 +57,16 @@ export default function Home() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                className="border-gray-300 text-gray-700 hover:bg-gray-50 rounded-full text-lg px-8 py-6"
-              >
-                Watch Demo
-              </Button>
             </div>
           </div>
           <div className="relative">
             <div className="absolute -z-10 blur-3xl rounded-full w-64 h-64 bg-[#EA4335]/10 -top-10 -left-10"></div>
             <div className="absolute -z-10 blur-3xl rounded-full w-64 h-64 bg-[#FBBC05]/10 -bottom-10 -right-10"></div>
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <div className="absolute top-0 right-0 bg-[#4285F4] text-white text-xs px-3 py-1 rounded-bl-md font-medium z-10">
-                Gemini 2.0 Flash
-              </div>
               <Image
-                src={prismaLogo}
-                alt="AI Literature Review Dashboard"
-                className="w-full"
+                src={agentLogo}
+                alt="Agent logo"
+                className="w-full rounded-full"
               />
             </div>
           </div>
