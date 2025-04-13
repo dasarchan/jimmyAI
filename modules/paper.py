@@ -20,7 +20,6 @@ class Paper:
     published_date: datetime
     pdf_url: str
     entry_id: str  # arXiv entry ID
-    bibtex: Optional[str] = None
     
     # Classification metadata
     categories: List[str]
@@ -40,6 +39,8 @@ class Paper:
     citation_count: Optional[int] = None
     references: Optional[List[str]] = None
     tags: Optional[List[str]] = None
+
+    bibtex: Optional[str] = None
     
     @classmethod
     def from_arxiv_result(cls, paper):
@@ -52,6 +53,7 @@ class Paper:
         Returns:
             Paper: A Paper object with metadata from the arxiv.Result
         """
+        # Print the available attributes and values from the arxiv Result object
         return cls(
             id=paper.get_short_id(),
             title=paper.title,

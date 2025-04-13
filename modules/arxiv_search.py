@@ -72,14 +72,19 @@ def populate_bibtex(paper):
         
     Returns:
         str: BibTeX entry as a string
-    """
-    bibtex = f"""
-    @article{{{paper.entry_id},
-        title={{{paper.title}}},
-        author={{{' and '.join(paper.authors)}}},
-        journal={{{paper.categories[0] if paper.categories else 'Unknown'}}},
-        year={{{paper.published_date.year}}},
-        url={{{paper.pdf_url}}}
-    }}
-    """
+    """    
+    # Format authors properly
+    author_str = " and ".join(paper.authors) if paper.authors else "Unknown"
+    
+    # Build BibTeX entry with proper indentation
+    bibtex = f"""@article{{{paper.id},
+        title = {{{paper.title}}},
+        author = {{{author_str}}},
+        year = {{{paper.published_date.year}}},
+        eprint = {{{paper.entry_id.split('/')[-1]}}},
+        archivePrefix = {{arXiv}},
+        primaryClass = {{{paper.categories[0] if paper.categories else 'Unknown'}}},
+        url = {{{paper.pdf_url}}}
+        }}"""
+    
     return bibtex
