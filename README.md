@@ -2,6 +2,10 @@
 
 A Gemini and LlamaIndex powered tool for conducting thorough literature reviews compliant with PRISMA Literature Review Guidelines.
 
+## Slides
+
+https://docs.google.com/presentation/d/1CqRKYYoL-Dd7HGOkAzyJYtjSjO2_LLn9axVMTfLMh-A/edit?usp=sharing
+
 ## Features
 
 - Generate optimized search queries for arXiv based on research topics and inclusion/exclusion criteria
