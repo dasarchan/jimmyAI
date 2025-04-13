@@ -15,24 +15,49 @@ api_key = os.getenv("GOOGLE_API_KEY")
 
 def create_index(papers: list[Paper]) -> VectorStoreIndex:
     """Create a vector index from a list of text strings"""
-    documents = [Document(text=paper.relevant_content) for paper in papers]
+    # Store the original papers with their IDs for later retrieval
+    paper_dict = {str(i): paper for i, paper in enumerate(papers)}
+    
+    # Create documents with metadata containing the paper index
+    documents = [
+        Document(
+            text=paper.relevant_content, 
+            metadata={"paper_id": str(i)}
+        ) for i, paper in enumerate(papers)
+    ]
+    
+    # Create the index with the documents
     index = VectorStoreIndex.from_documents(documents)
+    
+    # Store the paper dictionary in the index's extra_info
+    index.extra_info = {"papers": paper_dict}
+    
     return index
 
 def query_papers(index: VectorStoreIndex, query: str, top_k: int = 3):
     """Get top k most relevant papers for a query"""
     retriever = VectorIndexRetriever(index=index, similarity_top_k=top_k)
-    query_engine = RetrieverQueryEngine(retriever=retriever)
-    response = query_engine.query(query)
-    return response
+    
+    # Retrieve the relevant document nodes
+    retrieved_nodes = retriever.retrieve(query)
+    
+    # Get the papers from the stored dictionary using the metadata paper_id
+    paper_dict = index.extra_info.get("papers", {})
+    retrieved_papers = [paper_dict[node.metadata["paper_id"]] for node in retrieved_nodes]
+    
+    # Return both the papers and a formatted response
+    return retrieved_papers
 
 def write_lit_review_section(index, query, top_k=30):
     top_papers = query_papers(index, query, top_k=top_k)
+    top_papers_formatted = "\n".join(
+        [f"- {paper.title} by {', '.join(paper.authors)}{f'\n: BibTeX entry: {paper.bibtex}' if hasattr(paper, 'bibtex') and paper.bibtex else ''}: {paper.relevant_content}" for paper in top_papers]
+    )
     print(f"Top {top_k} papers for query '{query}':")
     prompt = f"""
-    Write a comprehensive literature review section based on the following relevant papers:
+    Write a comprehensive literature review section formatted in LaTeX based on the following relevant papers:
 
-    {top_papers}
+    {top_papers_formatted}
 
     Follow these guidelines:
     1. Synthesize the key findings and arguments from the papers, don't just summarize them individually
@@ -43,6 +68,7 @@ def write_lit_review_section(index, query, top_k=30):
     6. Include in-text citations when discussing specific papers
     7. Ensure logical flow and transitions between ideas
     8. Focus on how the papers relate to and help answer the research question: {query}
+    9. Add inline citations using \cite{{bibtex}} when referencing info from a paper
 
     Structure the review section with:
     - Clear topic sentences for each paragraph
@@ -52,6 +78,7 @@ def write_lit_review_section(index, query, top_k=30):
     - A concluding paragraph that ties the findings together
 
     Write the literature review section in a scholarly style while maintaining readability.
+    Do not add \section or any other headers, but use LaTeX style for citations, equations, etc.
     """
 
     contents = [{"text": prompt}]

@@ -34,7 +34,7 @@ def generate_search_query(topic, include_terms=None, exclude_terms=None):
  
     return query
 
-def fetch_papers(query, max_results=50, sort_by=arxiv.SortCriterion.SubmittedDate):
+def fetch_papers(query, max_results=50, sort_by=arxiv.SortCriterion.Relevance):
     """
     Fetch papers from arXiv based on the search query.
     
