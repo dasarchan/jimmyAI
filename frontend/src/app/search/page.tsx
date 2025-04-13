@@ -451,7 +451,7 @@ export default function SearchPage() {
                                     {result.title}
                                   </CardTitle>
                                   <p className="text-sm text-gray-500 mt-1 font-light">
-                                    {result.authors} • {result.year}
+                                    {result.authors} • Arxiv • {result.year}
                                   </p>
                                 </div>
                               </div>
@@ -479,10 +479,7 @@ export default function SearchPage() {
                                     )}
                                   </Button>
                                 </CollapsibleTrigger>
-<<<<<<< HEAD
-=======
 
->>>>>>> bda8138 (markdown)
                               </Collapsible>
                             </CardContent>
 
