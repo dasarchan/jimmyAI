@@ -53,7 +53,7 @@ export default function Home() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4">
               <Link href="/search">
-                <Button className="bg-[#4285F4] hover:bg-[#3367D6] rounded-full text-lg pl-12 pr-8 py-6 shadow-lg shadow-[#4285F4]/10 transition-all hover:shadow-xl hover:shadow-[#4285F4]/20">
+                <Button className="bg-[#4285F4] hover:cursor-pointer hover:bg-[#3367D6] rounded-full text-lg pl-12 pr-8 py-6 shadow-lg shadow-[#4285F4]/10 transition-all hover:shadow-xl hover:shadow-[#4285F4]/20">
                   Start Your Review
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
