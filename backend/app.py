@@ -70,7 +70,12 @@ def search():
         final_report = result.split("printing_final_report")[-1]
         # Parse the output to JSON
         try:
-            results = json.loads(result.stdout)
+            final_report = results.split("<final_report>")[1].split("</final_report>")[0]
+            papers = results.split("<papers>")[1].split("</papers>")
+            results = {
+                "final_report": final_report,
+                "papers": papers
+            } 
             print(f"Successfully parsed JSON with {len(results.get('results', []))} results")
         except json.JSONDecodeError as e:
             print(f"JSON parsing error: {str(e)}")
@@ -101,8 +106,8 @@ def search():
             "query": query,
             "formattedQuery": formatted_query,
             "queryTime": execution_time,
-            "totalResults": len(results.get("results", [])),
-            "results": results.get("results", [])
+            "totalResults": len(results),
+            "results": results
         }
         
         return jsonify(response)
