@@ -42,7 +42,7 @@ export default function Home() {
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
           <div>
             {/* <div className="inline-block mb-3 px-3 py-1 bg-[#F1F5FE] rounded-full">
-              <span className="text-sm text-[#4285F4] font-medium">Powered by Gemini 2.0 Flash</span>
+              <span className="text-sm text-[#4285F4] font-medium">PRISMA Literature Review Standard Compliant</span>
             </div> */}
             <h1 className="font-sans text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight mb-6">
               Literature Reviews, <span className="text-[#4285F4]">Agentically Automated</span>
@@ -162,45 +162,41 @@ export default function Home() {
       <section id="features" className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="inline-block mb-2 px-3 py-1 bg-[#F1F5FE] rounded-full text-sm text-[#4285F4] font-medium">Features</span>
-            <h2 className="font-sans text-3xl font-bold text-gray-900 tracking-tight">Intelligent Features</h2>
+            <span className="inline-block mb-2 px-3 py-1 bg-[#F1F5FE] rounded-full text-sm text-[#4285F4] font-medium">PRISMA Compliance</span>
+            <h2 className="font-sans text-3xl font-bold text-gray-900 tracking-tight">Research with Academic Rigor</h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto font-light">
-              Our AI agent combines Gemini 2.0 Flash's capabilities with purpose-built functions to streamline your literature review
-              process with academic precision.
+              Unlike conventional AI solutions, our platform strictly adheres to PRISMA (Preferred Reporting Items for Systematic Reviews and Meta-Analyses) guidelines, ensuring your literature reviews meet scientific publication standards.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-xl border border-gray-100 hover:border-[#4285F4]/30 transition-all hover:shadow-lg group">
               <div className="bg-[#4285F4]/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#4285F4]/20 transition-colors">
-                <Search className="h-7 w-7 text-[#4285F4]" />
+                <FileText className="h-7 w-7 text-[#4285F4]" />
               </div>
-              <h3 className="font-sans text-xl font-semibold mb-3 text-gray-900">Autonomous Search</h3>
+              <h3 className="font-sans text-xl font-semibold mb-3 text-gray-900">The PRISMA Problem</h3>
               <p className="text-gray-600 font-light">
-                Gemini 2.0 Flash generates and iteratively refines search queries across databases, ensuring comprehensive 
-                coverage while adapting to emerging patterns in the literature.
+                Current LLM-based research tools fail to implement PRISMA standards, leading to methodologically inconsistent reviews that lack the transparency and reproducibility required for academic publication.
               </p>
             </div>
 
             <div className="bg-white p-8 rounded-xl border border-gray-100 hover:border-[#EA4335]/30 transition-all hover:shadow-lg group">
               <div className="bg-[#EA4335]/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#EA4335]/20 transition-colors">
-                <Brain className="h-7 w-7 text-[#EA4335]" />
+                <CheckCircle className="h-7 w-7 text-[#EA4335]" />
               </div>
-              <h3 className="font-sans text-xl font-semibold mb-3 text-gray-900">Contextual Comprehension</h3>
+              <h3 className="font-sans text-xl font-semibold mb-3 text-gray-900">Complete Documentation</h3>
               <p className="text-gray-600 font-light">
-                Analyzes papers with deep understanding of research methodologies, extracting key findings and understanding their significance 
-                within the broader research context.
+                Our system meticulously documents every step of the review process—from search strategy formulation and database selection to screening criteria and data extraction—creating a fully PRISMA-compliant audit trail.
               </p>
             </div>
 
             <div className="bg-white p-8 rounded-xl border border-gray-100 hover:border-[#34A853]/30 transition-all hover:shadow-lg group">
               <div className="bg-[#34A853]/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#34A853]/20 transition-colors">
-                <FileText className="h-7 w-7 text-[#34A853]" />
+                <Search className="h-7 w-7 text-[#34A853]" />
               </div>
-              <h3 className="font-sans text-xl font-semibold mb-3 text-gray-900">Academic Documentation</h3>
+              <h3 className="font-sans text-xl font-semibold mb-3 text-gray-900">Structured Methodology</h3>
               <p className="text-gray-600 font-light">
-                Documents the review process following PRISMA guidelines with meticulous precision, creating comprehensive flow diagrams 
-                and detailed methodology sections that meet publication standards.
+                LitReviewAI follows the 27-item PRISMA checklist, generating publication-ready flow diagrams showing study selection, explicit inclusion/exclusion criteria, and comprehensive risk-of-bias assessments other AI tools simply cannot provide.
               </p>
             </div>
           </div>
