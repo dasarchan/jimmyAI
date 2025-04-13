@@ -25,7 +25,7 @@ export default function Home() {
               Features
             </Link>
             <Link href="#how-it-works" className="text-gray-700 hover:text-[#4285F4] transition-colors font-light">
-              How It Works
+              Agentic Process
             </Link>
             <Link href="#benefits" className="text-gray-700 hover:text-[#4285F4] transition-colors font-light">
               Benefits
