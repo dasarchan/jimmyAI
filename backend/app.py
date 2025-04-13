@@ -94,7 +94,7 @@ def search():
             }
         
         # Build formatted query for display
-        formatted_query = f'(("{query}" OR "machine learning" OR "AI") AND ("education" OR "learning" OR "teaching") AND ("literature review" OR "systematic review"))'
+        formatted_query = f'(("{query}"))'
         
         # Create response
         response = {
