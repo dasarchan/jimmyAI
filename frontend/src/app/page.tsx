@@ -40,14 +40,14 @@ export default function Home() {
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
           <div>
             <div className="inline-block mb-3 px-3 py-1 bg-[#F1F5FE] rounded-full">
-              <span className="text-sm text-[#4285F4] font-medium">Powered by Gemini 2.5 Pro</span>
+              <span className="text-sm text-[#4285F4] font-medium">Powered by Gemini 2.0 Flash</span>
             </div>
             <h1 className="font-sans text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight mb-6">
-              Systematic Literature Reviews, <span className="text-[#4285F4]">Intelligently Automated</span>
+              Literature Reviews, <span className="text-[#4285F4]">Agentically Automated</span>
             </h1>
             <p className="text-lg text-gray-700 leading-relaxed font-light">
-              Our AI agent leverages Gemini 2.5 Pro to transform academic research by intelligently automating 
-              search queries, analyzing scholarly sources, and documenting findings with academic rigor.
+              Our AI agent leverages Gemini 2.0 Flash's long context window to transform academic research by rapidly processing hundreds of scholars ources, intelligently automating 
+              search queries, and documenting findings with academic rigor.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4">
               <Link href="/search">
@@ -69,7 +69,7 @@ export default function Home() {
             <div className="absolute -z-10 blur-3xl rounded-full w-64 h-64 bg-[#FBBC05]/10 -bottom-10 -right-10"></div>
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <div className="absolute top-0 right-0 bg-[#4285F4] text-white text-xs px-3 py-1 rounded-bl-md font-medium z-10">
-                Gemini 2.5 Pro
+                Gemini 2.0 Flash
               </div>
               <Image
                 src={prismaLogo}
@@ -81,14 +81,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Gemini 2.5 Pro Integration Section */}
+      {/* Gemini 2.0 Flash Integration Section */}
       <section className="py-20 bg-gradient-to-b from-white to-[#F8FAFF]">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-1/3">
               <Image 
                 src={geminiLogo} 
-                alt="Gemini 2.5 Pro" 
+                alt="Gemini 2.0 Flash" 
                 width={240} 
                 height={240} 
                 className="mx-auto drop-shadow-xl"
@@ -96,10 +96,10 @@ export default function Home() {
             </div>
             <div className="md:w-2/3">
               <h2 className="font-sans text-3xl font-bold text-gray-900 mb-6 tracking-tight">
-                Enhanced by Gemini 2.5 Pro
+                Enhanced by Gemini 2.0 Flash
               </h2>
               <p className="text-lg text-gray-700 mb-8 font-light">
-                LitReviewAI harnesses the advanced capabilities of Gemini 2.5 Pro to deliver exceptional literature reviews with unprecedented 
+                LitReviewAI harnesses the advanced capabilities of Gemini 2.0 Flash to deliver exceptional literature reviews with unprecedented 
                 comprehension of academic texts, nuanced understanding of research methodologies, and intelligent synthesis of complex information.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -144,7 +144,7 @@ export default function Home() {
             <span className="inline-block mb-2 px-3 py-1 bg-[#F1F5FE] rounded-full text-sm text-[#4285F4] font-medium">Features</span>
             <h2 className="font-sans text-3xl font-bold text-gray-900 tracking-tight">Intelligent Features</h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto font-light">
-              Our AI agent combines Gemini 2.5 Pro's capabilities with purpose-built functions to streamline your literature review
+              Our AI agent combines Gemini 2.0 Flash's capabilities with purpose-built functions to streamline your literature review
               process with academic precision.
             </p>
           </div>
@@ -156,7 +156,7 @@ export default function Home() {
               </div>
               <h3 className="font-sans text-xl font-semibold mb-3 text-gray-900">Autonomous Search</h3>
               <p className="text-gray-600 font-light">
-                Gemini 2.5 Pro generates and iteratively refines search queries across databases, ensuring comprehensive 
+                Gemini 2.0 Flash generates and iteratively refines search queries across databases, ensuring comprehensive 
                 coverage while adapting to emerging patterns in the literature.
               </p>
             </div>
@@ -209,7 +209,7 @@ export default function Home() {
                   <div className="ml-8 bg-white p-8 rounded-xl shadow-sm">
                     <h3 className="font-sans text-xl font-semibold mb-3 text-gray-900">Research Question Analysis</h3>
                     <p className="text-gray-600 font-light">
-                      Input your research question or topic. Gemini 2.5 Pro analyzes it to extract key concepts, 
+                      Input your research question or topic. Gemini 2.0 Flash analyzes it to extract key concepts, 
                       identify relevant fields, and understand the scope and context of your inquiry.
                     </p>
                   </div>
@@ -272,7 +272,7 @@ export default function Home() {
             <span className="inline-block mb-2 px-3 py-1 bg-[#F1F5FE] rounded-full text-sm text-[#4285F4] font-medium">Benefits</span>
             <h2 className="font-sans text-3xl font-bold text-gray-900 tracking-tight">Advanced Benefits</h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto font-light">
-              Experience the advantages of Gemini 2.5 Pro-powered literature reviews.
+              Experience the advantages of Gemini 2.0 Flash-powered literature reviews.
             </p>
           </div>
 
@@ -316,7 +316,7 @@ export default function Home() {
               <div className="ml-4">
                 <h3 className="font-sans text-xl font-semibold mb-2 text-gray-900">Contextual Understanding</h3>
                 <p className="text-gray-600 font-light">
-                  Gemini 2.5 Pro comprehends complex research methodologies and conceptual frameworks, producing nuanced analyses.
+                  Gemini 2.0 Flash comprehends complex research methodologies and conceptual frameworks, producing nuanced analyses.
                 </p>
               </div>
             </div>
@@ -339,7 +339,7 @@ export default function Home() {
             <div className="bg-[#F1F5FE] p-4 border-b border-gray-100 flex items-center justify-between">
               <div>
                 <h3 className="font-medium text-gray-800">Literature Review Results</h3>
-                <div className="text-sm text-gray-500">Powered by Gemini 2.5 Pro</div>
+                <div className="text-sm text-gray-500">Powered by Gemini 2.0 Flash</div>
               </div>
               <div className="flex space-x-1">
                 <div className="w-3 h-3 rounded-full bg-[#EA4335]"></div>
