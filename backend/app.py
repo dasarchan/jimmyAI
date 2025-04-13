@@ -43,12 +43,32 @@ def search():
         print(f"Executing command: {cmd}")
         
         # Run the script
-        result = subprocess.run(
-            cmd, 
-            shell=True, 
-            capture_output=True, 
-            text=True
+        process = subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+            universal_newlines=True
         )
+
+        output = []
+        while True:
+            line = process.stdout.readline()
+            if not line and process.poll() is not None:
+                break
+            if line:
+                print(line.rstrip())
+                output.append(line)
+        
+        stderr = process.stderr.read()
+        result_code = process.poll()
+        result = type('Result', (), {
+            'returncode': result_code,
+            'stdout': ''.join(output),
+            'stderr': stderr
+        })()
         
         # Check if there was an error
         if result.returncode != 0:

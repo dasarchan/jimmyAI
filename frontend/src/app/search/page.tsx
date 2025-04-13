@@ -419,13 +419,19 @@ export default function SearchPage() {
                         value="high" 
                         className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
                       >
-                        Final Report
+                        High Relevance ({papers.filter(r => r.relevanceScore > 90).length})
                       </TabsTrigger>
                       <TabsTrigger 
                         value="all" 
                         className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
                       >
-                        Sources ({totalResults})
+                        Medium Relevance ({papers.filter(r => r.relevanceScore > 80 && r.relevanceScore <= 90).length})
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="low"
+                        className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
+                      >
+                        Low Relevance ({papers.filter(r => r.relevanceScore <= 80).length})
                       </TabsTrigger>
                     </TabsList>
 
