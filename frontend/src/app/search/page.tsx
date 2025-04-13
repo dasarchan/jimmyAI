@@ -413,10 +413,10 @@ export default function SearchPage() {
                 )}
 
                 {!isLoading && !error && (
-                  <Tabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
+                  <Tabs defaultValue="final report" className="mb-6" onValueChange={setActiveTab}>
                     <TabsList className="w-full grid grid-cols-2 mb-6 bg-[#F1F5FE]">
                       <TabsTrigger 
-                        value="high" 
+                        value="final report" 
                         className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
                       >
                         High Relevance ({papers.filter(r => r.relevanceScore > 90).length})
