@@ -29,7 +29,7 @@ def generate_text_for_question(question: str, index: VectorStoreIndex) -> str:
     # This might involve calling a language model, extracting relevant info from papers, etc.
 
     section = write_lit_review_section(index, question)
-    
+
     return section
 
 def process_section(section: Dict[Any, Any], index: VectorStoreIndex) -> None:

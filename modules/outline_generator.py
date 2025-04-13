@@ -1,6 +1,7 @@
 import os
 from google import genai
 import json
+import re
 from typing import Dict, List
 from modules.paper import Paper
 
@@ -10,6 +11,22 @@ Module for generating literature review outlines using Google's Gemini AI.
 
 # Configure the Gemini API
 from modules.ai_analyzer import client
+
+def clean_json(json_str):
+    """
+    Clean JSON string to remove trailing commas and other common issues.
+    
+    Args:
+        json_str (str): Potentially invalid JSON string
+        
+    Returns:
+        str: Cleaned JSON string
+    """
+    # Remove trailing commas in objects
+    json_str = re.sub(r',\s*}', '}', json_str)
+    # Remove trailing commas in arrays
+    json_str = re.sub(r',\s*]', ']', json_str)
+    return json_str
 
 def generate_outline(research_question: str, papers: List[Paper], max_sections=5):
     """
@@ -53,12 +70,14 @@ def generate_outline(research_question: str, papers: List[Paper], max_sections=5
                 "sections": [
                     {{
                         "title": "Subsection Title",
-                        "question": "Question encapsulating what this section is supposed to cover.",
+                        "question": "Question encapsulating what this section is supposed to cover."
                     }}
                 ]
             }}
-        ],
+        ]
     }}
+    
+    IMPORTANT: Ensure your JSON is valid with no trailing commas.
     """
     
     try:
@@ -79,9 +98,22 @@ def generate_outline(research_question: str, papers: List[Paper], max_sections=5
             json_content = content.split("```")[1].strip()
         else:
             json_content = content
+        
+        # Clean the JSON before parsing
+        cleaned_json = clean_json(json_content)
             
         # Parse the JSON
-        outline = json.loads(json_content)
+        try:
+            outline = json.loads(cleaned_json)
+        except json.JSONDecodeError as e:
+            print(f"Error parsing JSON: {e}")
+            print(f"Cleaned JSON was: {cleaned_json}")
+            # Fallback to a simple structure
+            outline = {
+                "title": f"Literature Review on {research_question}",
+                "sections": []
+            }
+        
         return outline
     
     except Exception as e:
@@ -116,7 +148,11 @@ def generate_literature_review_outline(research_question: str, relevant_papers: 
         filtered_papers = relevant_papers
     
     # Generate the outline
-    outline = generate_outline(research_question, filtered_papers)
+    try:
+        outline = generate_outline(research_question, filtered_papers)
+    except Exception as e:
+        print(f"Error generating outline: {e}, trying again")
+        outline = generate_outline(research_question, relevant_papers)
     
     return outline
 
