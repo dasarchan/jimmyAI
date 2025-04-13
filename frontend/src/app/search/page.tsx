@@ -419,19 +419,13 @@ export default function SearchPage() {
                         value="final report" 
                         className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
                       >
-                        High Relevance ({papers.filter(r => r.relevanceScore > 90).length})
+                        Final Report
                       </TabsTrigger>
                       <TabsTrigger 
                         value="all" 
                         className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
                       >
-                        Medium Relevance ({papers.filter(r => r.relevanceScore > 80 && r.relevanceScore <= 90).length})
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="low"
-                        className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
-                      >
-                        Low Relevance ({papers.filter(r => r.relevanceScore <= 80).length})
+                        Sources ({totalResults})
                       </TabsTrigger>
                     </TabsList>
 
@@ -571,24 +565,6 @@ export default function SearchPage() {
                             Next
                           </Button>
                         </div>
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="high">
-                      <div className="py-12 text-center text-gray-500 font-light">
-                        Switch to the "All Results" tab to see the demonstration data.
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="medium">
-                      <div className="py-12 text-center text-gray-500 font-light">
-                        Switch to the "All Results" tab to see the demonstration data.
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="low">
-                      <div className="py-12 text-center text-gray-500 font-light">
-                        Switch to the "All Results" tab to see the demonstration data.
                       </div>
                     </TabsContent>
                   </Tabs>
