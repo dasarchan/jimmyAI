@@ -16,6 +16,7 @@ from modules.outline_generator import generate_literature_review_outline
 from modules.paper import Paper
 from modules.rag import create_index, write_lit_review_section
 from modules.generate_report import generate_full_report
+from modules.compile_report import compile_latex_report
 
 @click.group()
 def cli():
@@ -68,7 +69,14 @@ def search(topic, max_papers):
     index = create_index(papers)
     # write_lit_review_section(index, query)
 
-    generate_full_report(outline, index)
+    full_outline = generate_full_report(outline, index)
+    print(full_outline)
+
+    compile_latex_report(full_outline)
+
+    click.echo("Full report generated successfully!")
+
+
 
     click.echo("\nLiterature review complete!")
 
