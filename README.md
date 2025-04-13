@@ -1,6 +1,6 @@
 # LitReviewAI
 
-An AI-powered CLI tool for conducting thorough literature reviews.
+A Gemini and LlamaIndex powered tool for conducting thorough literature reviews compliant with PRISMA Literature Review Guidelines.
 
 ## Features
 
