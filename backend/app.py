@@ -38,7 +38,7 @@ def search():
         
         # Safe query formatting
         safe_query = query.replace('"', '\\"')
-        cmd = f'python3 {script_path} search --topic "{safe_query}"'
+        cmd = f'python {script_path} search --topic "{safe_query}"'
         
         print(f"Executing command: {cmd}")
         
@@ -67,10 +67,11 @@ def search():
         
         # Print the output for debugging
         print(f"Script output: {result.stdout[:200]}...")  # Print first 200 chars
+        results = result.stdout
         # Parse the output to JSON
         try:
             final_report = results.split("<final_report>")[1].split("</final_report>")[0]
-            papers = json.loads(results.split("<papers>")[1].split("</papers>"))
+            papers = json.loads(results.split("<papers>")[1].split("</papers>")[0])
             print(f"Successfully parsed JSON with {len(papers['papers'])} papers")
         except json.JSONDecodeError as e:
             print(f"JSON parsing error: {str(e)}")
