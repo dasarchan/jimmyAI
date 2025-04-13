@@ -33,10 +33,11 @@ interface SearchResponse {
   formattedQuery: string;
   queryTime: number;
   totalResults: number;
-  results: Result[];
+  final_report: string;
+  papers: Paper[];
 }
 
-interface Result {
+interface Paper{
   id: number;
   title: string;
   authors: string;
@@ -53,7 +54,8 @@ export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [expandedResult, setExpandedResult] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState("all")
-  const [results, setResults] = useState<Result[]>([])
+  const [papers, setPapers] = useState<Paper[]>([])
+  const [finalReport, setFinalReport] = useState("")
   const [formattedQuery, setFormattedQuery] = useState("")
   const [queryTime, setQueryTime] = useState(0)
   const [totalResults, setTotalResults] = useState(0)
@@ -87,7 +89,8 @@ export default function SearchPage() {
       
       const data: SearchResponse = await response.json()
       
-      setResults(data.results)
+      setPapers(data.papers)
+      setFinalReport(data.final_report)
       setFormattedQuery(data.formattedQuery)
       setQueryTime(data.queryTime)
       setTotalResults(data.totalResults)
@@ -116,7 +119,8 @@ export default function SearchPage() {
       }
       
       const data = await response.json()
-      setResults(data.results)
+      setPapers(data.papers)
+      setFinalReport(data.final_report)
       setTotalResults(data.totalResults)
     } catch (err) {
       setError("Failed to apply filters. Please try again.")
