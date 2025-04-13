@@ -26,8 +26,9 @@ def query_papers(index: VectorStoreIndex, query: str, top_k: int = 3):
     response = query_engine.query(query)
     return response
 
-def write_lit_review_section(index, query, top_k):
+def write_lit_review_section(index, query, top_k=30):
     top_papers = query_papers(index, query, top_k=top_k)
+    print(f"Top {top_k} papers for query '{query}':")
     prompt = f"""
     Write a comprehensive literature review section based on the following relevant papers:
 
@@ -61,6 +62,7 @@ def write_lit_review_section(index, query, top_k):
         contents=contents
     )
 
+    print(f"Response: {response.text}")
     return response.text
 
 

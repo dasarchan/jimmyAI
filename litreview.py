@@ -66,9 +66,9 @@ def search(topic, max_papers):
     # For each section, write it
     # TODO: logic to recursively go through outline
     index = create_index(papers)
-    write_lit_review_section(index, query)
+    # write_lit_review_section(index, query)
 
-    generate_full_report(outline, papers)
+    generate_full_report(outline, index)
 
     click.echo("\nLiterature review complete!")
 
