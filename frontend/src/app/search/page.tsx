@@ -162,7 +162,7 @@ export default function SearchPage() {
       <section className="bg-white py-12 border-b border-gray-100">
         <div className="container mx-auto px-6">
           <div className="inline-block mb-3 px-3 py-1 bg-[#F1F5FE] rounded-full">
-            <span className="text-sm text-[#4285F4] font-medium">Powered by Gemini 2.5 Pro</span>
+            <span className="text-sm text-[#4285F4] font-medium">Powered by Gemini 2.0 Flash</span>
           </div>
           <h1 className="font-sans text-3xl font-bold text-gray-900 mb-6 tracking-tight">Literature Search</h1>
           <form onSubmit={handleSearch} className="max-w-4xl">
@@ -414,36 +414,24 @@ export default function SearchPage() {
 
                 {!isLoading && !error && (
                   <Tabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
-                    <TabsList className="grid grid-cols-4 mb-6 bg-[#F1F5FE]">
-                      <TabsTrigger 
-                        value="all" 
-                        className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
-                      >
-                        All Results ({totalResults})
-                      </TabsTrigger>
+                    <TabsList className="w-full grid grid-cols-2 mb-6 bg-[#F1F5FE]">
                       <TabsTrigger 
                         value="high" 
                         className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
                       >
-                        High Relevance ({results.filter(r => r.relevanceScore > 90).length})
+                        Final Report
                       </TabsTrigger>
                       <TabsTrigger 
-                        value="medium"
+                        value="all" 
                         className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
                       >
-                        Medium Relevance ({results.filter(r => r.relevanceScore > 80 && r.relevanceScore <= 90).length})
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="low"
-                        className="text-sm data-[state=active]:bg-[#4285F4] data-[state=active]:text-white"
-                      >
-                        Low Relevance ({results.filter(r => r.relevanceScore <= 80).length})
+                        Sources ({totalResults})
                       </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="all" className="space-y-6">
-                      {results.length > 0 ? (
-                        results.map((result) => (
+                      {papers.length > 0 ? (
+                        papers.map((result) => (
                           <Card key={result.id} className="border-gray-100 overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-shadow">
                             <CardHeader className="pb-2">
                               <div className="flex justify-between items-start">
@@ -452,19 +440,9 @@ export default function SearchPage() {
                                     {result.title}
                                   </CardTitle>
                                   <p className="text-sm text-gray-500 mt-1 font-light">
-                                    {result.authors} • {result.journal} • {result.year}
+                                    {result.authors} • Arxiv • {result.year}
                                   </p>
                                 </div>
-                                <Badge className={`
-                                  ${result.relevanceScore > 90 
-                                    ? 'bg-[#34A853]/10 text-[#34A853]' 
-                                    : result.relevanceScore > 80 
-                                      ? 'bg-[#FBBC05]/10 text-[#FBBC05]' 
-                                      : 'bg-[#EA4335]/10 text-[#EA4335]'
-                                  } border-none ml-2 rounded-full px-3`}
-                                >
-                                  {result.relevanceScore}% Relevant
-                                </Badge>
                               </div>
                             </CardHeader>
 
@@ -491,7 +469,7 @@ export default function SearchPage() {
                                   </Button>
                                 </CollapsibleTrigger>
 
-                                <CollapsibleContent className="mt-6 space-y-5">
+                                {/* <CollapsibleContent className="mt-6 space-y-5">
                                   <div>
                                     <h4 className="text-sm font-medium text-gray-700 mb-3">Key Findings</h4>
                                     <ul className="list-disc pl-5 text-sm text-gray-600 space-y-2 font-light">
@@ -521,7 +499,7 @@ export default function SearchPage() {
                                       ))}
                                     </div>
                                   </div>
-                                </CollapsibleContent>
+                                </CollapsibleContent> */}
                               </Collapsible>
                             </CardContent>
 
